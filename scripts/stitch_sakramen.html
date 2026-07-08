@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+
+<html lang="id"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sakramen Perkawinan - Katedral Santo Yosef Pontianak</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface": "#fcf9f4",
+                        "on-secondary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "surface-container-low": "#f6f3ee",
+                        "tertiary-fixed": "#c5edc3",
+                        "primary-fixed-dim": "#e6c180",
+                        "surface-container": "#f0ede9",
+                        "on-surface-variant": "#4d463a",
+                        "on-tertiary-container": "#193a1e",
+                        "surface-container-high": "#ebe8e3",
+                        "tertiary-fixed-dim": "#aad0a8",
+                        "surface-dim": "#dcdad5",
+                        "secondary-fixed": "#eee1cd",
+                        "on-secondary-container": "#6d6354",
+                        "tertiary": "#446646",
+                        "on-secondary-fixed": "#211b0f",
+                        "outline": "#7f7668",
+                        "inverse-primary": "#e6c180",
+                        "error": "#ba1a1a",
+                        "inverse-surface": "#31302d",
+                        "surface-bright": "#fcf9f4",
+                        "secondary-fixed-dim": "#d2c5b2",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-container": "#453000",
+                        "surface-variant": "#e5e2dd",
+                        "secondary-container": "#eee1cd",
+                        "inverse-on-surface": "#f3f0eb",
+                        "on-tertiary-fixed-variant": "#2d4e2f",
+                        "on-tertiary-fixed": "#012108",
+                        "on-primary": "#ffffff",
+                        "on-surface": "#1c1c19",
+                        "background": "#fcf9f4",
+                        "primary-container": "#b8975a",
+                        "secondary": "#665d4e",
+                        "on-secondary-fixed-variant": "#4e4637",
+                        "surface-container-highest": "#e5e2dd",
+                        "primary": "#755a23",
+                        "on-primary-fixed": "#271900",
+                        "outline-variant": "#d1c5b5",
+                        "tertiary-container": "#80a580",
+                        "on-primary-fixed-variant": "#5b430d",
+                        "on-error": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "primary-fixed": "#ffdea6",
+                        "on-background": "#1c1c19",
+                        "surface-tint": "#755a23",
+                        "surface-container-lowest": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Cormorant Garamond", "serif"],
+                        "body": ["Plus Jakarta Sans", "sans-serif"],
+                        "label": ["Plus Jakarta Sans", "sans-serif"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .whisper-shadow {
+            box-shadow: 0 24px 48px -12px rgba(28, 28, 25, 0.04);
+        }
+        .hero-gradient {
+            background: linear-gradient(rgba(252, 249, 244, 0.8), rgba(252, 249, 244, 0.95)), url('https://images.unsplash.com/photo-1548625313-049e10740321?auto=format&fit=crop&q=80&w=2000');
+            background-size: cover;
+            background-position: center;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- Shared Navigation -->
+<header class="flex items-center justify-between whitespace-nowrap bg-surface px-10 py-4 max-w-[1200px] mx-auto">
+<div class="flex items-center gap-4 text-on-surface">
+<div class="size-6 text-primary">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_6_330)">
+<path clip-rule="evenodd" d="M24 0.757355L47.2426 24L24 47.2426L0.757355 24L24 0.757355ZM21 35.7574V12.2426L9.24264 24L21 35.7574Z" fill="currentColor" fill-rule="evenodd"></path>
+</g>
+<defs>
+<clippath id="clip0_6_330"><rect fill="white" height="48" width="48"></rect></clippath>
+</defs>
+</svg>
+</div>
+<h2 class="font-headline text-2xl font-bold tracking-tight">Paroki</h2>
+</div>
+<div class="flex flex-1 justify-end gap-10">
+<nav class="flex items-center gap-10">
+<a class="text-on-surface text-sm font-medium hover:text-primary transition-colors" href="#">Beranda</a>
+<a class="text-primary text-sm font-semibold underline underline-offset-8" href="#">Sakramen</a>
+<a class="text-on-surface text-sm font-medium hover:text-primary transition-colors" href="#">Jadwal Misa</a>
+<a class="text-on-surface text-sm font-medium hover:text-primary transition-colors" href="#">Warta</a>
+<a class="text-on-surface text-sm font-medium hover:text-primary transition-colors" href="#">Kontak</a>
+</nav>
+<button class="flex min-w-[100px] cursor-pointer items-center justify-center rounded-lg h-10 px-6 bg-primary text-on-primary text-sm font-bold tracking-wide hover:bg-on-primary-fixed-variant transition-all">
+<span>Login</span>
+</button>
+</div>
+</header>
+<main class="w-full">
+<!-- Hero Section -->
+<section class="hero-gradient flex min-h-[500px] flex-col items-center justify-center text-center p-8 border-b border-outline-variant/10" data-alt="interior of a majestic cathedral with light streaming through stained glass windows onto wooden pews">
+<span class="label-md uppercase tracking-[0.2em] text-primary mb-4 font-semibold">Sakramen Suci</span>
+<h1 class="font-headline text-5xl md:text-7xl font-bold text-on-surface mb-6 max-w-4xl leading-tight">Sakramen Perkawinan</h1>
+<p class="text-lg md:text-xl text-on-surface-variant font-light max-w-2xl leading-relaxed italic">
+                "Demikianlah mereka bukan lagi dua, melainkan satu. Karena itu, apa yang telah dipersatukan Allah, tidak boleh diceraikan manusia."
+            </p>
+</section>
+<!-- Main Content Area -->
+<div class="max-w-[900px] mx-auto px-6 py-20 space-y-32">
+<!-- Section 1: Quick Actions -->
+<section class="flex flex-wrap justify-center gap-4"><button class="flex items-center gap-3 px-8 py-4 bg-surface-container-lowest whisper-shadow rounded-xl text-primary font-bold hover:bg-primary hover:text-on-primary transition-all group">
+<span class="material-symbols-outlined text-[20px]" data-icon="description">description</span>
+<span>Formulir Pendaftaran</span>
+</button></section>
+<!-- Section 2: Timeline -->
+<section>
+<div class="text-center mb-16">
+<h2 class="font-headline text-4xl font-bold mb-4">Alur Proses Perkawinan</h2>
+<div class="h-[2px] w-24 bg-primary-fixed-dim mx-auto"></div>
+</div>
+<div class="relative space-y-0">
+<!-- Vertical Connector Line -->
+<div class="absolute left-6 top-4 bottom-4 w-[1px] border-l border-dashed border-outline-variant/40"></div>
+<!-- Step items -->
+<div class="relative flex gap-8 pb-12 group">
+<div class="z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary text-on-primary font-headline text-xl font-bold">1</div>
+<div class="pt-2">
+<h4 class="text-xl font-bold text-on-surface">Pendaftaran Awal</h4>
+<p class="text-on-surface-variant mt-1">Calon mempelai melapor ke Sekretariat Paroki minimal 6 bulan sebelum rencana pernikahan.</p>
+</div>
+</div>
+<div class="relative flex gap-8 pb-12 group">
+<div class="z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-surface-container-highest border border-outline-variant/30 text-on-surface-variant font-headline text-xl font-bold">2</div>
+<div class="pt-2">
+<h4 class="text-xl font-bold text-on-surface">Kursus Persiapan Perkawinan (KPP)</h4>
+<p class="text-on-surface-variant mt-1">Mengikuti pembekalan selama 2-3 hari untuk memahami hakikat perkawinan Katolik.</p>
+</div>
+</div>
+<div class="relative flex gap-8 pb-12 group">
+<div class="z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-surface-container-highest border border-outline-variant/30 text-on-surface-variant font-headline text-xl font-bold">3</div>
+<div class="pt-2">
+<h4 class="text-xl font-bold text-on-surface">Administrasi &amp; Pembayaran</h4>
+<p class="text-on-surface-variant mt-1">Penyelesaian biaya administrasi dan penentuan tanggal penyelidikan kanonik.</p>
+</div>
+</div>
+<div class="relative flex gap-8 pb-12 group">
+<div class="z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-surface-container-highest border border-outline-variant/30 text-on-surface-variant font-headline text-xl font-bold">4</div>
+<div class="pt-2">
+<h4 class="text-xl font-bold text-on-surface">Penyelidikan Kanonik</h4>
+<p class="text-on-surface-variant mt-1">Wawancara khusus antara calon mempelai dengan Pastor Paroki.</p>
+</div>
+</div>
+<div class="relative flex gap-8 pb-12 group">
+<div class="z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-surface-container-highest border border-outline-variant/30 text-on-surface-variant font-headline text-xl font-bold">5</div>
+<div class="pt-2">
+<h4 class="text-xl font-bold text-on-surface">Penyerahan Dokumen</h4>
+<p class="text-on-surface-variant mt-1">Melengkapi seluruh berkas administratif (Surat Baptis terbaru, KTP, dll).</p>
+</div>
+</div>
+<div class="relative flex gap-8 pb-12 group">
+<div class="z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-surface-container-highest border border-outline-variant/30 text-on-surface-variant font-headline text-xl font-bold">6</div>
+<div class="pt-2">
+<h4 class="text-xl font-bold text-on-surface">Pengumuman Perkawinan</h4>
+<p class="text-on-surface-variant mt-1">Diumumkan di Gereja selama 3 minggu berturut-turut untuk meminta dukungan doa umat.</p>
+</div>
+</div>
+<div class="relative flex gap-8 pb-12 group">
+<div class="z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-surface-container-highest border border-outline-variant/30 text-on-surface-variant font-headline text-xl font-bold">7</div>
+<div class="pt-2">
+<h4 class="text-xl font-bold text-on-surface">Gladi Bersih</h4>
+<p class="text-on-surface-variant mt-1">Latihan teknis upacara pemberkatan bersama saksi dan petugas liturgi.</p>
+</div>
+</div>
+<div class="relative flex gap-8 pb-0 group">
+<div class="z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary text-on-primary font-headline text-xl font-bold">8</div>
+<div class="pt-2">
+<h4 class="text-xl font-bold text-on-surface">Pemberkatan &amp; Pengambilan Surat</h4>
+<p class="text-on-surface-variant mt-1">Hari bahagia peneguhan janji suci dan serah terima dokumen resmi gereja.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 3: Document Requirements -->
+<section>
+<div class="text-center mb-16">
+<h2 class="font-headline text-4xl font-bold mb-4">Dokumen yang Diperlukan</h2>
+<p class="text-on-surface-variant italic">Pastikan dokumen asli dibawa saat verifikasi di sekretariat.</p>
+</div>
+<div class="grid md:grid-cols-2 gap-12">
+<!-- Column Katolik -->
+<div class="bg-surface-container-low p-8 rounded-2xl">
+<div class="flex items-center justify-between mb-8">
+<h3 class="font-headline text-2xl font-bold text-primary">Calon Katolik</h3>
+<span class="px-3 py-1 bg-tertiary-container/30 text-on-tertiary-fixed-variant text-[10px] font-bold uppercase tracking-wider rounded">Wajib</span>
+</div>
+<ul class="space-y-6">
+<li class="flex items-start gap-4">
+<span class="material-symbols-outlined text-primary text-[20px] mt-1" data-icon="check_circle" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<p class="text-on-surface-variant">Surat Baptis Terbaru (Maksimal 6 bulan)</p>
+</li>
+<li class="flex items-start gap-4">
+<span class="material-symbols-outlined text-primary text-[20px] mt-1" data-icon="check_circle" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<p class="text-on-surface-variant">Sertifikat Kursus Persiapan Perkawinan</p>
+</li>
+<li class="flex items-start gap-4">
+<span class="material-symbols-outlined text-primary text-[20px] mt-1" data-icon="check_circle" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<p class="text-on-surface-variant">Fotokopi KTP &amp; Kartu Keluarga</p>
+</li>
+</ul>
+</div>
+<!-- Column Non-Katolik -->
+<div class="bg-surface-container-low p-8 rounded-2xl border border-outline-variant/10">
+<div class="flex items-center justify-between mb-8">
+<h3 class="font-headline text-2xl font-bold text-on-surface-variant">Calon Non-Katolik</h3>
+<span class="px-3 py-1 bg-surface-container-highest text-on-secondary-container text-[10px] font-bold uppercase tracking-wider rounded">Menyesuaikan</span>
+</div>
+<ul class="space-y-6">
+<li class="flex items-start gap-4">
+<span class="material-symbols-outlined text-primary text-[20px] mt-1" data-icon="check_circle" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<p class="text-on-surface-variant">Surat Keterangan Belum Menikah (Lurah)</p>
+</li>
+<li class="flex items-start gap-4">
+<span class="material-symbols-outlined text-primary text-[20px] mt-1" data-icon="check_circle" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<p class="text-on-surface-variant">Fotokopi Akte Kelahiran</p>
+</li>
+<li class="flex items-start gap-4">
+<span class="material-symbols-outlined text-primary text-[20px] mt-1" data-icon="check_circle" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<p class="text-on-surface-variant">2 Orang Saksi (Dewasa &amp; Berakal Budi)</p>
+</li>
+</ul>
+</div>
+</div>
+</section>
+<!-- Section 4: Costs -->
+<section>
+<div class="text-center mb-16">
+<h2 class="font-headline text-4xl font-bold mb-4">Biaya Administrasi &amp; Stole Fee</h2>
+<p class="text-on-surface-variant">Kontribusi untuk pemeliharaan Gereja dan operasional Liturgi.</p>
+</div>
+<div class="grid md:grid-cols-2 gap-8">
+<!-- Card 1 -->
+<div class="bg-surface-container-lowest whisper-shadow p-10 rounded-2xl text-center flex flex-col items-center">
+<span class="label-md uppercase tracking-widest text-on-surface-variant opacity-60 mb-4">Umat Paroki</span>
+<div class="font-headline text-5xl font-bold text-primary mb-6">Rp 1.000.000</div>
+<p class="text-sm text-on-surface-variant max-w-[200px] leading-relaxed">
+                            Bagi mempelai yang berdomisili dan terdaftar di Paroki Katedral.
+                        </p>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface-container-lowest whisper-shadow p-10 rounded-2xl text-center flex flex-col items-center border border-primary-fixed-dim/20">
+<span class="label-md uppercase tracking-widest text-on-surface-variant opacity-60 mb-4">Luar Paroki</span>
+<div class="font-headline text-5xl font-bold text-primary mb-6">Rp 2.000.000</div>
+<p class="text-sm text-on-surface-variant max-w-[200px] leading-relaxed">
+                            Bagi mempelai yang berasal dari Paroki lain (Perlu Surat Ijin Pastor).
+                        </p>
+</div>
+</div>
+</section>
+<!-- Section 5: CTA -->
+<section class="bg-primary text-on-primary rounded-3xl p-12 text-center whisper-shadow overflow-hidden relative">
+<!-- Decorative element -->
+<div class="absolute top-[-50px] right-[-50px] opacity-10">
+<span class="material-symbols-outlined text-[300px]" data-icon="church">church</span>
+</div>
+<h2 class="font-headline text-4xl font-bold mb-6 relative z-10">Siap Memulai Perjalanan Suci Anda?</h2>
+<p class="text-lg opacity-90 mb-10 max-w-xl mx-auto relative z-10 font-light">Daftarkan pernikahan Anda secara online. Login atau buat akun terlebih dahulu untuk memulai proses pendaftaran.</p>
+<div class="flex flex-col sm:flex-row gap-4 justify-center relative z-10"><a class="bg-surface text-primary px-8 py-4 rounded-xl font-bold flex items-center justify-center gap-3 hover:bg-surface-container-low transition-all" href="/login">
+                        Daftar Pernikahan Sekarang →
+                    </a>
+<button class="bg-transparent border border-surface text-surface px-8 py-4 rounded-xl font-bold flex items-center justify-center gap-3 hover:bg-on-primary/10 transition-all">
+                        Hubungi Sekretariat
+                    </button></div><p class="text-[12px] italic opacity-80 mt-6 relative z-10 text-on-primary">
+                    Sudah memiliki akun? <a class="underline" href="/login">Login</a> untuk langsung melanjutkan pendaftaran Anda.
+                </p>
+</section>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-high border-t border-outline-variant/10 py-16 px-10">
+<div class="max-w-[1200px] mx-auto grid md:grid-cols-4 gap-12">
+<div class="space-y-6">
+<div class="flex items-center gap-3 text-on-surface">
+<div class="size-5 text-primary">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M24 0.757355L47.2426 24L24 47.2426L0.757355 24L24 0.757355ZM21 35.7574V12.2426L9.24264 24L21 35.7574Z" fill="currentColor"></path>
+</svg>
+</div>
+<h2 class="font-headline text-xl font-bold">Katedral Pontianak</h2>
+</div>
+<p class="text-sm text-on-surface-variant leading-relaxed">
+                    Jl. Pattimura No. 1, Kota Pontianak, Kalimantan Barat. Menjadi saksi kasih Allah di tengah masyarakat.
+                </p>
+</div>
+<div>
+<h4 class="font-bold mb-6 text-sm uppercase tracking-widest text-primary">Layanan</h4>
+<ul class="space-y-4 text-sm text-on-surface-variant">
+<li><a class="hover:text-primary transition-colors" href="#">Permohonan Misa</a></li>
+<li><a class="hover:text-primary transition-colors text-primary font-medium" href="#">Sakramen Perkawinan</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Baptis Bayi</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Pemberkatan Rumah</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold mb-6 text-sm uppercase tracking-widest text-primary">Warta Paroki</h4>
+<ul class="space-y-4 text-sm text-on-surface-variant">
+<li><a class="hover:text-primary transition-colors" href="#">Buletin Mingguan</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Pengumuman Liturgi</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Kegiatan Umat</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Agenda Pastor</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold mb-6 text-sm uppercase tracking-widest text-primary">Kontak</h4>
+<div class="space-y-4 text-sm text-on-surface-variant">
+<p class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[18px]" data-icon="phone">phone</span>
+                        (0561) 732314
+                    </p>
+<p class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[18px]" data-icon="mail">mail</span>
+                        sekretariat@katedralpontianak.id
+                    </p>
+<div class="flex gap-4 pt-4">
+<div class="size-8 rounded-full bg-surface-container flex items-center justify-center text-primary hover:bg-primary hover:text-on-primary cursor-pointer transition-all">
+<span class="material-symbols-outlined text-[20px]" data-icon="share">share</span>
+</div>
+<div class="size-8 rounded-full bg-surface-container flex items-center justify-center text-primary hover:bg-primary hover:text-on-primary cursor-pointer transition-all">
+<span class="material-symbols-outlined text-[20px]" data-icon="public">public</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="max-w-[1200px] mx-auto mt-16 pt-8 border-t border-outline-variant/10 text-center text-[12px] text-on-surface-variant/60 uppercase tracking-widest">
+            © 2024 Paroki Katedral Santo Yosef Pontianak. Soli Deo Gloria.
+        </div>
+</footer>
+</body></html>

@@ -1,0 +1,303 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ============================================
+   Katedral Santo Yosef — Design System
+   Philosophy: "Sacred Minimalism"
+   Version: 2.0
+   ============================================ */
+
+@theme inline {
+  /* ── Typography ── */
+  --font-sans: var(--font-dm-sans);
+  --font-serif: var(--font-cormorant);
+  --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-cormorant);
+
+  /* ── Sacred Color Palette ── */
+  /* Backgrounds */
+  --color-cream:       #FAF7F2;
+  --color-surface:     #FFFFFF;
+  --color-parchment:   #F5F0E8;
+  --color-sand:        #E8E0D0;
+
+  /* Text */
+  --color-espresso:    #2C1F14;
+  --color-brown:       #6B5744;
+  --color-taupe:       #9C8B7A;
+
+  /* Gold Accent */
+  --color-gold:        #B8960C;
+  --color-gold-dark:   #9A7A0A;
+  --color-gold-light:  #FDF3D0;
+
+  /* Semantic Colors */
+  --color-success:     #4A7C59;
+  --color-success-bg:  #EAF4ED;
+  --color-error:       #8B3A3A;
+  --color-error-bg:    #FAEDED;
+  --color-warning:     #A0522D;
+  --color-warning-bg:  #FDF0E8;
+  --color-info:        #4A6FA5;
+  --color-info-bg:     #EAF0FA;
+
+  /* Admin Panel */
+  --color-admin-dark:  #2C1F14;
+  --color-admin-hover: rgba(255,255,255,0.08);
+  --color-admin-active: rgba(184,150,12,0.2);
+
+  /* ── shadcn/ui Token Mappings ── */
+  --color-background:           var(--color-cream);
+  --color-foreground:           var(--color-espresso);
+  --color-card:                 var(--color-surface);
+  --color-card-foreground:      var(--color-espresso);
+  --color-popover:              var(--color-surface);
+  --color-popover-foreground:   var(--color-espresso);
+  --color-primary:              var(--color-gold);
+  --color-primary-foreground:   #FFFFFF;
+  --color-secondary:            var(--color-parchment);
+  --color-secondary-foreground: var(--color-espresso);
+  --color-muted:                var(--color-parchment);
+  --color-muted-foreground:     var(--color-taupe);
+  --color-accent:               var(--color-gold-light);
+  --color-accent-foreground:    var(--color-gold-dark);
+  --color-destructive:          var(--color-error);
+  --color-border:               var(--color-sand);
+  --color-input:                var(--color-sand);
+  --color-ring:                 var(--color-gold);
+
+  /* ── Sidebar Tokens (User/White Theme) ── */
+  --color-sidebar:                    var(--color-surface);
+  --color-sidebar-foreground:         var(--color-espresso);
+  --color-sidebar-primary:            var(--color-gold);
+  --color-sidebar-primary-foreground: #FFFFFF;
+  --color-sidebar-accent:             var(--color-parchment);
+  --color-sidebar-accent-foreground:  var(--color-gold);
+  --color-sidebar-border:             var(--color-sand);
+  --color-sidebar-ring:               var(--color-gold);
+
+  /* ── Radius ── */
+  --radius-sm:  4px;
+  --radius-md:  8px;
+  --radius-lg:  12px;
+  --radius-xl:  16px;
+  --radius-2xl: 24px;
+
+  /* chart colors */
+  --color-chart-1: var(--color-gold);
+  --color-chart-2: var(--color-success);
+  --color-chart-3: var(--color-info);
+  --color-chart-4: var(--color-error);
+  --color-chart-5: var(--color-taupe);
+}
+
+:root {
+  --radius: 0.5rem; /* 8px — shadcn default */
+}
+
+/* ============================================
+   Base Layer
+   ============================================ */
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+    max-width: 100%;
+  }
+
+  body {
+    background-color: #FAF7F2;
+    color: #2C1F14;
+    font-family: var(--font-dm-sans), system-ui, sans-serif;
+    line-height: 1.6;
+    min-height: 100dvh;
+    overflow-x: hidden;
+  }
+
+  /* ── Heading Typography ── */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-cormorant), 'Georgia', serif;
+    color: #2C1F14;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+  h1 { font-size: clamp(2rem, 5vw, 3rem);   }
+  h2 { font-size: clamp(1.5rem, 4vw, 2.25rem); }
+  h3 { font-size: clamp(1.25rem, 3vw, 1.75rem); }
+  h4 { font-size: 1.25rem; }
+
+  /* ── Focus Ring ── */
+  :focus-visible {
+    outline: 2px solid #B8960C;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* ── Selection ── */
+  ::selection {
+    background: #FDF3D0;
+    color: #2C1F14;
+  }
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: #FAF7F2; }
+  ::-webkit-scrollbar-thumb { background: #E8E0D0; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #B8960C; }
+}
+
+/* ============================================
+   Animation Utilities
+   ============================================ */
+
+/* Fade-in from below (scroll reveal) */
+.fade-in-up {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.fade-in-up-delay-1 { animation-delay: 0.1s; }
+.fade-in-up-delay-2 { animation-delay: 0.2s; }
+.fade-in-up-delay-3 { animation-delay: 0.3s; }
+.fade-in-up-delay-4 { animation-delay: 0.4s; }
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Page fade-in */
+.page-fade {
+  animation: pageFade 0.4s ease forwards;
+}
+
+@keyframes pageFade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ── Skeleton Shimmer ── */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    #F5F0E8 25%,
+    #EDE8DF 50%,
+    #F5F0E8 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.6s linear infinite;
+  border-radius: 6px;
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ============================================
+   Reusable Component Classes
+   ============================================ */
+
+/* Card */
+.card-sacred {
+  background: #FFFFFF;
+  border: 1px solid #E8E0D0;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(44,31,20,0.06);
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+.card-sacred:hover {
+  box-shadow: 0 8px 24px rgba(44,31,20,0.10);
+  transform: translateY(-2px);
+}
+
+/* Gold Divider */
+.divider-gold {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #B8960C 30%, #B8960C 70%, transparent);
+  opacity: 0.4;
+  margin: 1rem 0;
+}
+
+/* Input focus gold glow */
+.input-gold:focus {
+  border-color: #B8960C;
+  box-shadow: 0 0 0 2px rgba(184,150,12,0.12);
+  outline: none;
+}
+
+/* Section label */
+.section-label {
+  font-family: var(--font-dm-sans), sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #B8960C;
+}
+
+/* Badge pill styles */
+.badge-gold    { background: #FDF3D0; color: #9A7A0A;   border: 1px solid #E8D070; }
+.badge-green   { background: #EAF4ED; color: #2E6B41;   border: 1px solid #A8D5B4; }
+.badge-crimson { background: #FAEDED; color: #7A2A2A;   border: 1px solid #E8AAAA; }
+.badge-blue    { background: #EAF0FA; color: #2E4E85;   border: 1px solid #A8BEDE; }
+.badge-sienna  { background: #FDF0E8; color: #8B3E1A;   border: 1px solid #E8C0A0; }
+.badge-gray    { background: #F0EDEB; color: #6B5744;   border: 1px solid #D4CAC0; }
+
+/* ── Admin Sidebar Active Item ── */
+.admin-nav-active {
+  background: rgba(184,150,12,0.18);
+  color: #FDF3D0;
+  border-left: 3px solid #B8960C;
+}
+.admin-nav-item {
+  color: #D4C5B0;
+  border-left: 3px solid transparent;
+  transition: background 0.15s, color 0.15s;
+}
+.admin-nav-item:hover {
+  background: rgba(255,255,255,0.08);
+  color: #F5EDD8;
+}
+
+/* ── User Sidebar Active Item ── */
+.user-nav-active {
+  background: #FDF3D0;
+  color: #B8960C;
+  border-left: 3px solid #B8960C;
+  font-weight: 600;
+}
+.user-nav-item {
+  color: #6B5744;
+  border-left: 3px solid transparent;
+  transition: background 0.15s, color 0.15s;
+}
+.user-nav-item:hover {
+  background: #F5F0E8;
+  color: #2C1F14;
+}
+
+/* ── Prose / Rich Text ── */
+.prose-sacred {
+  color: #6B5744;
+  line-height: 1.8;
+  font-size: 1rem;
+}
+.prose-sacred h2 { color: #2C1F14; margin-top: 2rem; }
+.prose-sacred h3 { color: #2C1F14; }
+.prose-sacred a  { color: #B8960C; text-decoration: underline; }
+.prose-sacred strong { color: #2C1F14; font-weight: 600; }
