@@ -36,11 +36,7 @@ export default async function LandingPage() {
     .from(marriageApplications)
     .innerJoin(coupleProfiles, eq(marriageApplications.coupleProfileId, coupleProfiles.id))
     .where(eq(marriageApplications.currentStage, 5));
-
-  const HARI_ORDER = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat"];
-  const weekdays = HARI_ORDER;
-
-  const getDayName = (rawStr: string | undefined | null): string => {
+const getDayName = (rawStr: string | undefined | null): string => {
     if (!rawStr) return "";
     const prefix = rawStr.split("::")[0];
     const dateObj = new Date(prefix);
@@ -49,76 +45,125 @@ export default async function LandingPage() {
     }
     return prefix;
   };
-//dari sini ----------------------------------------------------------------------------------------------------------------------------------------
-type ScheduleRow = { label: string; time: string; subtitle?: string; key: string };
 
   // === 1. Filter Misa Harian ===
-  // Mengambil data yang berakhiran "::Misa Harian" 
-  // (Juga mendeteksi "::Harian" agar data lama Anda tidak tiba-tiba hilang sebelum di-edit)
   const rawHarian = allMasses.filter(m => 
-    m.category?.endsWith("::Misa Harian") || m.category?.endsWith("::Harian")
+    m.category?.endsWith("::Misa Harian") || 
+    (m.category?.endsWith("::Harian") && !["Sabtu", "Minggu"].includes(getDayName(m.category)))
   );
-  
-  const harianRows = rawHarian.map(m => ({
-    day: getDayName(m.category),
-    time: m.eventDate || "",
-    title: m.title || "",
-  })).filter(r => weekdays.includes(r.day)); // Pastikan hanya masuk ke Senin-Jumat
 
-  const weekdayByTime = new Map<string, { days: string[]; titles: Set<string> }>();
+  const harianRows = rawHarian.map(m => {
+    let day = getDayName(m.category);
+    let isFromTitle = false;
+    
+    // JIKA TANGGAL KOSONG, GUNAKAN JUDUL SEBAGAI NAMA HARI
+    if (!day) {
+      day = m.title || "Setiap Hari";
+      isFromTitle = true;
+    }
+    
+    return {
+      day,
+      time: m.eventDate || "",
+      title: isFromTitle ? "" : (m.title || ""),
+    };
+  });
+
+  const harianByTime = new Map<string, { days: string[]; titles: Set<string> }>();
   for (const r of harianRows) {
-    const existing = weekdayByTime.get(r.time);
+    const existing = harianByTime.get(r.time);
     if (existing) {
       if (!existing.days.includes(r.day)) existing.days.push(r.day);
-      existing.titles.add(r.title);
+      if (r.title) existing.titles.add(r.title);
     } else {
-      weekdayByTime.set(r.time, { days: [r.day], titles: new Set([r.title]) });
+      harianByTime.set(r.time, { days: [r.day], titles: new Set(r.title ? [r.title] : []) });
     }
   }
 
+  type ScheduleRow = { label: string; time: string; subtitle?: string; key: string };
   const groupedHarian: ScheduleRow[] = [];
-  for (const [time, { days, titles }] of weekdayByTime) {
-    days.sort((a, b) => weekdays.indexOf(a) - weekdays.indexOf(b));
-    const label = days.length === 5 ? "Senin – Jumat" : days.length > 1 ? days.join(", ") : days[0];
-    
-    // Filter judul default agar tidak muncul berulang sebagai subtitle
-    const titleArr = Array.from(titles).filter(t => t !== "Misa Harian" && t !== "Misa Harian / Umum");
+  const weekdays = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"];
+  
+  for (const [time, { days, titles }] of harianByTime) {
+    days.sort((a, b) => {
+      const idxA = weekdays.indexOf(a);
+      const idxB = weekdays.indexOf(b);
+      if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+      return 0;
+    });
+
+    let label = days.join(", ");
+    if (days.length === 5 && days.every(d => ["Senin", "Selasa", "Rabu", "Kamis", "Jumat"].includes(d))) {
+      label = "Senin – Jumat";
+    }
+
+    const titleArr = Array.from(titles).filter(t => t !== "Misa Harian" && t !== "Misa Harian / Umum" && t !== label);
     const subtitle = titleArr.length > 0 ? titleArr.join(", ") : undefined;
+
     groupedHarian.push({ label, time: `${time} WIB`, subtitle, key: `h-${time}-${label}` });
   }
 
 
   // === 2. Filter Misa Mingguan ===
-  // Mengambil data yang berakhiran "::Misa Mingguan"
-  // (Juga mendeteksi data lama "::Harian" yang harinya Sabtu/Minggu)
   const rawMingguan = allMasses.filter(m => 
     m.category?.endsWith("::Misa Mingguan") || 
     (m.category?.endsWith("::Harian") && ["Sabtu", "Minggu"].includes(getDayName(m.category)))
   );
 
-  const mingguanRows = rawMingguan.map(m => ({
-    day: getDayName(m.category),
-    time: m.eventDate || "",
-    title: m.title || "",
-  }));
+  const mingguanRows = rawMingguan.map(m => {
+    let day = getDayName(m.category);
+    let isFromTitle = false;
+    
+    if (!day) {
+      day = m.title || "Minggu";
+      isFromTitle = true;
+    }
+    
+    return {
+      day,
+      time: m.eventDate || "",
+      title: isFromTitle ? "" : (m.title || ""),
+    };
+  });
+
+  const mingguanByLabel = new Map<string, { times: string[]; titles: Set<string> }>();
+  for (const r of mingguanRows) {
+    let label = r.day;
+    if (label === "Minggu") {
+      const h = parseInt(r.time.split(/[:.]/)[0]);
+      if (!isNaN(h)) {
+        if (h < 12) label = "Minggu Pagi";
+        else label = "Minggu Sore";
+      }
+    }
+
+    const existing = mingguanByLabel.get(label);
+    if (existing) {
+      if (!existing.times.includes(r.time)) existing.times.push(r.time);
+      if (r.title) existing.titles.add(r.title);
+    } else {
+      mingguanByLabel.set(label, { times: [r.time], titles: new Set(r.title ? [r.title] : []) });
+    }
+  }
 
   const groupedMingguan: ScheduleRow[] = [];
+  for (const [label, { times, titles }] of mingguanByLabel) {
+    times.sort();
+    const timeStr = times.join(" & ");
+    const titleArr = Array.from(titles).filter(t => t !== "Misa Mingguan" && t !== "Misa Harian / Umum" && t !== label);
+    const subtitle = titleArr.length > 0 ? titleArr.join(", ") : undefined;
 
-  const sabtuMasses = mingguanRows.filter(r => r.day === "Sabtu");
-  if (sabtuMasses.length > 0) {
-    const time = sabtuMasses.map(r => r.time).join(" & ");
-    groupedMingguan.push({ label: "Sabtu", time: `${time} WIB`, key: "sabtu" });
+    groupedMingguan.push({ label, time: `${timeStr} WIB`, subtitle, key: `m-${label}` });
   }
 
-  const mingguMasses = mingguanRows.filter(r => r.day === "Minggu");
-  if (mingguMasses.length > 0) {
-    const pagi = mingguMasses.filter(r => parseInt(r.time.split(/[:.]/)[0]) < 12);
-    const sore = mingguMasses.filter(r => parseInt(r.time.split(/[:.]/)[0]) >= 12);
-    if (pagi.length > 0) groupedMingguan.push({ label: "Minggu Pagi", time: `${pagi.map(r => r.time).join(" & ")} WIB`, key: "minggu-pagi" });
-    if (sore.length > 0) groupedMingguan.push({ label: "Minggu Sore", time: `${sore.map(r => r.time).join(" & ")} WIB`, key: "minggu-sore" });
-    if (pagi.length === 0 && sore.length === 0) groupedMingguan.push({ label: "Minggu", time: `${mingguMasses.map(r => r.time).join(" & ")} WIB`, key: "minggu" });
-  }
-
+  groupedMingguan.sort((a, b) => {
+    const order = ["Sabtu", "Minggu Pagi", "Minggu", "Minggu Sore"];
+    let idxA = order.findIndex(o => a.label.includes(o));
+    let idxB = order.findIndex(o => b.label.includes(o));
+    if (idxA === -1) idxA = 99;
+    if (idxB === -1) idxB = 99;
+    return idxA - idxB;
+  });
 
   return (
     <div className="flex flex-col bg-transparent">
