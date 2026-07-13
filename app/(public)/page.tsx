@@ -265,15 +265,12 @@ export default async function LandingPage() {
                     <li key={g.key} className="flex flex-row justify-between items-center gap-4 group w-full">
                       <div className="flex flex-col">
                         <span className="font-medium text-[#6B6560] group-hover:text-[#3D2B1F] transition-colors">{g.label}</span>
-                        {g.subtitle && <span className="text-xs text-[#9C8B7A]">{g.subtitle}Sabtu - Minggu</span>}
-                        <span className="font-medium text-[#6B6560] group-hover:text-[#3D2B1F] transition-colors">{g.label}</span>
-                        {g.subtitle && <span className="text-xs text-[#9C8B7A]">{g.subtitle}Kecuali Jumat Pertama & Terakhir Bulan </span>}
+                        {g.subtitle && <span className="text-xs text-[#9C8B7A]">{g.subtitle}</span>}
                       </div>
-                      <span className="font-semibold text-[#B8960C] bg-[#FFF8E1] px-4 py-1.5 rounded-full text-sm w-fit whitespace-nowrap">{g.time} 05.00 WIB</span>
-                      <span className="font-semibold text-[#B8960C] bg-[#FFF8E1] px-4 py-1.5 rounded-full text-sm w-fit whitespace-nowrap">{g.time} 18.00 WIB</span>
+                      <span className="font-semibold text-[#B8960C] bg-[#FFF8E1] px-4 py-1.5 rounded-full text-sm w-fit whitespace-nowrap">{g.time}</span>
                     </li>
                   )) : (
-                    <li className="text-[#9C8B7A] italic text-sm">Belum ada jadwal.</li>
+                    <li className="text-[#9C8B7A] italic text-sm">Belum ada jadwal</li>
                   )}
                 </ul>
               </div>
