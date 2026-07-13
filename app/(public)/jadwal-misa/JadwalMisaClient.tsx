@@ -16,12 +16,12 @@ type ScheduleRow = { label: string; time: string; subtitle?: string; key: string
 const ScheduleList = ({ rows }: { rows: ScheduleRow[] }) => (
   <ul className="space-y-6">
     {rows.length > 0 ? rows.map((g) => (
-      <li key={g.key} className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 group">
+      <li key={g.key} className="flex flex-row justify-between items-center w-full gap-4 group">
         <div className="flex flex-col">
           <span className="font-medium text-[#6B6560] group-hover:text-[#3D2B1F] transition-colors">{g.label}</span>
           {g.subtitle && <span className="text-xs text-[#9C8B7A]">{g.subtitle}</span>}
         </div>
-        <span className="font-semibold text-[#B8960C] bg-[#FFF8E1] px-4 py-1.5 rounded-full text-sm w-fit whitespace-nowrap">
+        <span className="font-semibold text-[#B8960C] bg-[#FFF8E1] px-4 py-1.5 rounded-full text-sm whitespace-nowrap">
           {g.time}
         </span>
       </li>
@@ -32,10 +32,7 @@ const ScheduleList = ({ rows }: { rows: ScheduleRow[] }) => (
 );
 
 export default function JadwalMisaClient({ masses }: { masses: MassItem[] }) {
-  const massesHarian = masses.filter(m => m.category?.endsWith("::Harian"));
-  const massesKhusus = masses.filter(m => m.category?.endsWith("::Khusus"));
-
-  // Extract day name from category prefix (could be "Senin" or a date string)
+  // Extract day name from category prefix
   const getDayName = (rawStr: string | null | undefined): string => {
     if (!rawStr) return "";
     const prefix = rawStr.split("::")[0];
@@ -46,20 +43,25 @@ export default function JadwalMisaClient({ masses }: { masses: MassItem[] }) {
     return prefix;
   };
 
-  // Build per-mass row: { day, time, title }
-  const harianRows = massesHarian.map(m => ({
+  // --- MISA KHUSUS ---
+  const massesKhusus = masses.filter(m => 
+    m.category?.endsWith("::Misa Khusus") || m.category?.endsWith("::Khusus")
+  );
+
+  // --- MISA HARIAN (Senin–Jumat) ---
+  const rawHarian = masses.filter(m => 
+    m.category?.endsWith("::Misa Harian") || m.category?.endsWith("::Harian")
+  );
+  
+  const weekdays = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat"];
+  const harianRows = rawHarian.map(m => ({
     day: getDayName(m.category),
     time: m.eventDate || "",
     title: m.title,
-  }));
+  })).filter(r => weekdays.includes(r.day)); // Pastikan hanya Senin-Jumat
 
-  // --- Misa Harian (Senin–Jumat) ---
-  const weekdays = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat"];
-  const weekdayRows = harianRows.filter(r => weekdays.includes(r.day));
-
-  // Group by time, collect days for each time
   const weekdayByTime = new Map<string, { days: string[]; titles: Set<string> }>();
-  for (const r of weekdayRows) {
+  for (const r of harianRows) {
     const existing = weekdayByTime.get(r.time);
     if (existing) {
       if (!existing.days.includes(r.day)) existing.days.push(r.day);
@@ -71,7 +73,6 @@ export default function JadwalMisaClient({ masses }: { masses: MassItem[] }) {
 
   const harianSchedule: ScheduleRow[] = [];
   for (const [time, { days, titles }] of weekdayByTime) {
-    // Sort days by weekday order
     days.sort((a, b) => weekdays.indexOf(a) - weekdays.indexOf(b));
     let label: string;
     if (days.length === 5) {
@@ -81,14 +82,23 @@ export default function JadwalMisaClient({ masses }: { masses: MassItem[] }) {
     } else {
       label = days[0];
     }
-    // If titles are not all generic "Misa Harian", show the specific one
-    const titleArr = Array.from(titles).filter(t => t !== "Misa Harian");
+    const titleArr = Array.from(titles).filter(t => t !== "Misa Harian" && t !== "Misa Harian / Umum");
     const subtitle = titleArr.length > 0 ? titleArr.join(", ") : undefined;
     harianSchedule.push({ label, time: `${time} WIB`, subtitle, key: `h-${time}-${label}` });
   }
 
-  // --- Misa Mingguan (Sabtu & Minggu) ---
-  const weekendRows = harianRows.filter(r => ["Sabtu", "Minggu"].includes(r.day));
+  // --- MISA MINGGUAN (Sabtu & Minggu) ---
+  const rawMingguan = masses.filter(m => 
+    m.category?.endsWith("::Misa Mingguan") || 
+    (m.category?.endsWith("::Harian") && ["Sabtu", "Minggu"].includes(getDayName(m.category)))
+  );
+
+  const weekendRows = rawMingguan.map(m => ({
+    day: getDayName(m.category),
+    time: m.eventDate || "",
+    title: m.title,
+  }));
+  
   const mingguanSchedule: ScheduleRow[] = [];
 
   // Sabtu
@@ -132,8 +142,6 @@ export default function JadwalMisaClient({ masses }: { masses: MassItem[] }) {
       });
     }
   }
-
-
 
   return (
     <div className="space-y-12">

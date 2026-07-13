@@ -70,7 +70,7 @@ export default function EditKontenClient({ content }: { content: ContentItem }) 
   const [error, setError] = useState("");
 
   const initMassDay = content.type === "MASS_SCHEDULE" && content.category ? content.category.split("::")[0] : "Minggu";
-  const initMassType = content.type === "MASS_SCHEDULE" && content.category ? content.category.split("::")[1] || "Harian" : "Harian";
+  const initMassType = content.type === "MASS_SCHEDULE" && content.category ? content.category.split("::")[1] || "Misa Harian" : "Misa Harian";
 
   // Determine initial body text and images based on content type
   const isNewsOrAnnouncement = content.type === "NEWS" || content.type === "ANNOUNCEMENT";
@@ -355,7 +355,7 @@ export default function EditKontenClient({ content }: { content: ContentItem }) 
           className="w-full h-11 px-4 border border-[#DDD8D0] rounded-md text-sm focus:border-[#B8960C] focus:ring-1 focus:ring-[#B8960C] outline-none" />
       </div>
 
-      {/* Jadwal Misa Fields */}
+     {/* Jadwal Misa Fields */}
       {isMassSchedule && (
         <div className="space-y-5 p-5 bg-[#F5F0E8] rounded-lg border border-[#EDE8DF]">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -368,8 +368,12 @@ export default function EditKontenClient({ content }: { content: ContentItem }) 
               <label className="block text-xs font-bold text-[#6B6560] uppercase tracking-wider mb-2">Jenis Misa</label>
               <select name="massType" value={form.massType} onChange={handleChange}
                 className="w-full h-11 px-4 border border-[#DDD8D0] rounded-md text-sm bg-white focus:border-[#B8960C] focus:ring-1 focus:ring-[#B8960C] outline-none">
-                <option value="Harian">Misa Harian / Umum</option>
-                <option value="Khusus">Misa Khusus (Hari Raya / Acara Khusus)</option>
+                
+                {/* UPDATE DI SINI: Mengubah menjadi 3 opsi dengan value yang sesuai */}
+                <option value="Misa Harian">Misa Harian</option>
+                <option value="Misa Mingguan">Misa Mingguan</option>
+                <option value="Misa Khusus">Misa Khusus (Hari Raya / Acara Khusus)</option>
+                
               </select>
             </div>
           </div>

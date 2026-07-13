@@ -28,7 +28,7 @@ export default function TambahKontenPage() {
     type: "NEWS",
     category: "",
     massDay: "",
-    massType: "Harian",
+    massType: "Misa Harian",
     body: "",
     eventDate: "07:00",
     eventEndDate: "",
@@ -377,8 +377,10 @@ export default function TambahKontenPage() {
                   onChange={handleChange}
                   className="w-full h-11 px-4 border border-[#DDD8D0] rounded-md text-sm bg-white focus:border-[#B8960C] focus:ring-1 focus:ring-[#B8960C] outline-none"
                 >
-                  <option value="Harian">Misa Harian / Umum</option>
-                  <option value="Khusus">Misa Khusus (Hari Raya / Acara Khusus)</option>
+                  {/* UPDATE DI SINI: Value diubah menjadi 3 opsi yang spesifik */}
+                  <option value="Misa Harian">Misa Harian</option>
+                  <option value="Misa Mingguan">Misa Mingguan</option>
+                  <option value="Misa Khusus">Misa Khusus</option>
                 </select>
               </div>
             </div>
