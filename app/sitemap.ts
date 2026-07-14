@@ -2,7 +2,7 @@ import { MetadataRoute } from "next";
 
 const APP_URL =
   process.env.NEXT_PUBLIC_APP_URL ||
-  "https://kp-web-katedral-pontianak.vercel.app";
+  "https://katedralpontianak.com";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
