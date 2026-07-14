@@ -12,11 +12,11 @@ export const dynamic = "force-dynamic";
 
 /**
  * Parse body field: supports both legacy plain HTML and new JSON format.
- * New format: { html: "<p>...</p>", images: ["url1", "url2"] }
+ * New format: { html: "<p>...</p>", images: ["url1", "url2"], coverCaption: "..." }
  * Legacy:     "<p>plain html content</p>"
  */
-function parseNewsBody(body: string | null): { html: string; images: string[] } {
-  if (!body) return { html: "", images: [] };
+function parseNewsBody(body: string | null): { html: string; images: string[]; coverCaption?: string } {
+  if (!body) return { html: "", images: [], coverCaption: "" };
 
   try {
     const parsed = JSON.parse(body);
@@ -24,13 +24,15 @@ function parseNewsBody(body: string | null): { html: string; images: string[] } 
       return {
         html: parsed.html || "",
         images: Array.isArray(parsed.images) ? parsed.images.filter(Boolean) : [],
+        // PERBAIKAN: Menangkap keterangan cover dari JSON
+        coverCaption: parsed.coverCaption || "", 
       };
     }
     // JSON but not our format — treat as plain text
-    return { html: body, images: [] };
+    return { html: body, images: [], coverCaption: "" };
   } catch {
     // Not JSON — legacy plain HTML
-    return { html: body, images: [] };
+    return { html: body, images: [], coverCaption: "" };
   }
 }
 
@@ -47,7 +49,8 @@ export default async function BeritaDetailPage({ params }: { params: { slug: str
   }
 
   const news = newsRecord[0];
-  const { html, images } = parseNewsBody(news.body);
+  // PERBAIKAN: Mengambil coverCaption dari hasil parsing
+  const { html, images, coverCaption } = parseNewsBody(news.body);
 
   return (
     <div className="min-h-screen bg-[#FAF7F2]">
@@ -64,7 +67,6 @@ export default async function BeritaDetailPage({ params }: { params: { slug: str
           sizes="100vw"
         />
       </div>
-
 
       {/* Content Area */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 -mt-32 relative z-20 pb-20">
@@ -90,8 +92,29 @@ export default async function BeritaDetailPage({ params }: { params: { slug: str
             {news.title}
           </h1>
 
-          {/* Event Details for Announcements / Mass Schedule */}
-          {(news.eventDate || news.location) && (
+          {/* 1. MENAMPILKAN GAMBAR COVER DAN KETERANGANNYA */}
+          {news.imageUrl && (
+            <div className="mb-10">
+              <div className="relative w-full h-[300px] md:h-[450px] rounded-2xl overflow-hidden shadow-sm border border-[#EDE8DF] bg-[#F5F0E8]">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={news.imageUrl}
+                  alt={news.title || "Cover Berita"}
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
+                />
+              </div>
+              
+              {/* PERBAIKAN: Menampilkan Teks Keterangan Cover di Bawah Gambar */}
+              {coverCaption && (
+                <p className="mt-3 text-sm md:text-base italic text-[#6B5744] text-left leading-relaxed">
+                  {coverCaption}
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* 2. KOTAK INFO TANGGAL/LOKASI: Disembunyikan untuk Berita (NEWS), hanya tampil untuk Pengumuman/Misa */}
+          {news.type !== "NEWS" && (news.eventDate || news.location) && (
             <div className="mb-8 p-5 bg-[#F5F0E8] rounded-xl border border-[#EDE8DF] flex flex-col sm:flex-row flex-wrap gap-4 sm:gap-8">
               {news.eventDate && (
                 <div className="flex items-center gap-2.5 text-sm text-[#4A3728]">
@@ -126,6 +149,7 @@ export default async function BeritaDetailPage({ params }: { params: { slug: str
             </div>
           )}
 
+          {/* 3. ISI KONTEN (Hanya dipanggil satu kali) */}
           <div
             className="whitespace-pre-wrap prose prose-stone max-w-none text-[#4A3728] prose-p:leading-relaxed prose-p:mb-5 prose-a:text-[#B8960C] prose-a:font-semibold prose-headings:font-bold prose-headings:text-[#3D2B1F] prose-strong:text-[#3D2B1F] prose-li:mb-1"
             dangerouslySetInnerHTML={{ __html: html }}

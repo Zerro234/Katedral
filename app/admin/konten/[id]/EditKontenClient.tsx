@@ -48,7 +48,8 @@ function parseGalleryBody(body: string | null, imageUrl: string | null): { image
 }
 
 // Parse body for NEWS/ANNOUNCEMENT: supports JSON { html, images } or legacy plain HTML
-function parseNewsBody(body: string | null): { html: string; images: string[] } {
+// Parse body for NEWS/ANNOUNCEMENT: supports JSON { html, images } or legacy plain HTML
+function parseNewsBody(body: string | null): { html: string; images: string[]; coverCaption?: string } {
   if (!body) return { html: "", images: [] };
   try {
     const parsed = JSON.parse(body);
@@ -56,6 +57,7 @@ function parseNewsBody(body: string | null): { html: string; images: string[] } 
       return {
         html: parsed.html || "",
         images: Array.isArray(parsed.images) ? parsed.images.filter(Boolean) : [],
+        coverCaption: parsed.coverCaption || "", // <-- TAMBAHAN BARU
       };
     }
     return { html: body, images: [] };
@@ -97,6 +99,7 @@ export default function EditKontenClient({ content }: { content: ContentItem }) 
   );
   const [galleryCaption, setGalleryCaption] = useState(initGallery.caption);
 
+  const [coverCaption, setCoverCaption] = useState(initNewsBody.coverCaption || "");
   // Multi-upload & Cropping states
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadingCount, setUploadingCount] = useState(0);
@@ -260,9 +263,12 @@ export default function EditKontenClient({ content }: { content: ContentItem }) 
         if (!payload.imageUrl && galleryImages.length > 0) {
           payload.imageUrl = galleryImages[0];
         }
-        if (galleryImages.length > 0) {
-          payload.body = JSON.stringify({ html: form.body, images: galleryImages });
-        }
+        // UPDATE: Selalu simpan sebagai JSON agar coverCaption ikut tersimpan (sama seperti Berita)
+        payload.body = JSON.stringify({ 
+          html: form.body, 
+          images: galleryImages,
+          coverCaption: coverCaption
+        });
       } else if (payload.type === "GALLERY") {
         payload.imageUrl = galleryImages[0] || "";
         payload.body = JSON.stringify({ images: galleryImages, caption: galleryCaption });
@@ -290,7 +296,7 @@ export default function EditKontenClient({ content }: { content: ContentItem }) 
   const isGallery = form.type === "GALLERY";
   const isNews = form.type === "NEWS";
   const isAnnouncement = form.type === "ANNOUNCEMENT";
-  const showPhotoUploader = isGallery || isNews || isAnnouncement;
+  const showPhotoUploader = isGallery || isAnnouncement;
 
   return (
     <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-[#DDD8D0] shadow-sm p-8 space-y-6">
@@ -404,14 +410,31 @@ export default function EditKontenClient({ content }: { content: ContentItem }) 
       )}
 
       {/* URL Gambar Cover (News/Announcement only, not Gallery) */}
+      {/* URL Gambar Cover & Keterangan (News/Announcement only, not Gallery) */}
       {!isGallery && !isMassSchedule && (
-        <ImageUpload
-          label="Gambar Cover (Opsional)"
-          value={form.imageUrl}
-          onChange={(url) => setForm(prev => ({ ...prev, imageUrl: url }))}
-          aspectRatio={4/3}
-          helpText="Disarankan resolusi 800x600 px (Rasio 4:3) agar gambar sampul pas saat ditampilkan."
-        />
+        <div className="space-y-4 border-b border-[#EDE8DF] pb-6">
+          <ImageUpload
+            label="Gambar Cover (Opsional)"
+            value={form.imageUrl}
+            onChange={(url) => setForm(prev => ({ ...prev, imageUrl: url }))}
+            aspectRatio={4/3}
+            helpText="Disarankan resolusi 800x600 px (Rasio 4:3) agar gambar sampul pas saat ditampilkan."
+          />
+          
+          {/* Input Keterangan Foto Cover */}
+          <div>
+            <label className="block text-xs font-bold text-[#6B6560] uppercase tracking-wider mb-2">
+              Keterangan / Sumber Foto Cover <span className="text-[#A89880] font-normal">(Opsional)</span>
+            </label>
+            <input
+              type="text"
+              value={coverCaption}
+              onChange={(e) => setCoverCaption(e.target.value)}
+              placeholder="cth: Ketua Komisi Komunikasi Sosial (Komsos)... Foto: Komsos KWI"
+              className="w-full h-11 px-4 border border-[#DDD8D0] rounded-md text-sm bg-white focus:border-[#B8960C] focus:ring-1 focus:ring-[#B8960C] outline-none italic text-[#6B6560]"
+            />
+          </div>
+        </div>
       )}
 
       {/* ── PHOTO UPLOADER — Gallery, News, Announcement ───────────────────── */}

@@ -33,10 +33,26 @@ function SafeImage({ src, alt, className }: { src: string; alt: string; classNam
 
 
 /** Strip HTML tags and decode common entities for plain-text card preview */
-function stripHtml(html: string | null): string {
-  if (!html) return "";
-  return html
-    .replace(/<[^>]+>/g, " ")       // remove all HTML tags
+/** Strip HTML tags and decode common entities for plain-text card preview */
+function stripHtml(rawBody: string | null): string {
+  if (!rawBody) return "";
+
+  let textToStrip = rawBody;
+
+  // 1. Coba baca sebagai JSON terlebih dahulu
+  try {
+    const parsed = JSON.parse(rawBody);
+    if (parsed && typeof parsed === "object" && "html" in parsed) {
+      textToStrip = parsed.html || ""; 
+    }
+  } catch {
+    // Jika gagal dibaca sebagai JSON (berarti data lama), biarkan apa adanya
+    textToStrip = rawBody;
+  }
+
+  // 2. Bersihkan teks dari tag HTML dan karakter khusus
+  return textToStrip
+    .replace(/<[^>]+>/g, " ")        // remove all HTML tags
     .replace(/&nbsp;/g, " ")         // decode &nbsp;
     .replace(/&amp;/g, "&")          // decode &amp;
     .replace(/&lt;/g, "<")           // decode &lt;

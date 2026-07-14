@@ -40,6 +40,8 @@ export default function TambahKontenPage() {
   const [galleryImages, setGalleryImages] = useState<string[]>([]);
   const [galleryCaption, setGalleryCaption] = useState("");
 
+  const [coverCaption, setCoverCaption] = useState("");
+
   // Multi-upload & Cropping states
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadingCount, setUploadingCount] = useState(0);
@@ -191,13 +193,12 @@ export default function TambahKontenPage() {
         payload.category = `${payload.massDay}::${payload.massType}`;
       } else if (payload.type === "NEWS") {
         payload.category = "Berita Paroki";
-        if (!payload.imageUrl && galleryImages.length > 0) {
-          payload.imageUrl = galleryImages[0];
-        }
-        // If news has documentation photos, encode body as JSON
-        if (galleryImages.length > 0) {
-          payload.body = JSON.stringify({ html: form.body, images: galleryImages });
-        }
+        // Selalu simpan body sebagai JSON untuk memasukkan html dan coverCaption
+        payload.body = JSON.stringify({ 
+          html: form.body, 
+          images: [], 
+          coverCaption: coverCaption 
+        });
       } else if (payload.type === "ANNOUNCEMENT") {
         payload.category = "Pengumuman";
         if (!payload.imageUrl && galleryImages.length > 0) {
@@ -238,7 +239,7 @@ export default function TambahKontenPage() {
   const isGallery = form.type === "GALLERY";
   const isNews = form.type === "NEWS";
   const isAnnouncement = form.type === "ANNOUNCEMENT";
-  const showPhotoUploader = isGallery || isNews || isAnnouncement;
+  const showPhotoUploader = isGallery || isAnnouncement;
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -433,16 +434,32 @@ export default function TambahKontenPage() {
           </div>
         )}
 
-        {/* URL Gambar Cover (News/Announcement only, not Gallery) */}
+        {/* URL Gambar Cover & Keterangan (News/Announcement only, not Gallery) */}
         {!isGallery && !isMassSchedule && (
-          <ImageUpload
-            label="Gambar Cover (Opsional)"
-            value={form.imageUrl}
-            onChange={(url) => setForm(prev => ({ ...prev, imageUrl: url }))}
-            placeholder="https://example.com/gambar.jpg"
-            aspectRatio={4/3}
-            helpText="Disarankan resolusi 800x600 px (Rasio 4:3) agar gambar sampul pas saat ditampilkan."
-          />
+          <div className="space-y-4">
+            <ImageUpload
+              label="Gambar Cover (Opsional)"
+              value={form.imageUrl}
+              onChange={(url) => setForm(prev => ({ ...prev, imageUrl: url }))}
+              placeholder="https://example.com/gambar.jpg"
+              aspectRatio={4/3}
+              helpText="Disarankan resolusi 800x600 px (Rasio 4:3) agar gambar sampul pas saat ditampilkan."
+            />
+            
+            {/* Input Keterangan Foto Cover */}
+            <div>
+              <label className="block text-xs font-bold text-[#6B6560] uppercase tracking-wider mb-2">
+                Keterangan / Sumber Foto Cover <span className="text-[#A89880] font-normal">(Opsional)</span>
+              </label>
+              <input
+                type="text"
+                value={coverCaption}
+                onChange={(e) => setCoverCaption(e.target.value)}
+                placeholder="cth: Ketua Komisi Komunikasi Sosial (Komsos), Konferensi Waligereja Indonesia (KWI)... Foto: Komsos KWI"
+                className="w-full h-11 px-4 border border-[#DDD8D0] rounded-md text-sm bg-white focus:border-[#B8960C] focus:ring-1 focus:ring-[#B8960C] outline-none italic text-[#6B6560]"
+              />
+            </div>
+          </div>
         )}
 
         {/* Upload Foto — Gallery, News, dan Announcement */}
