@@ -17,7 +17,7 @@ const dmSans = DM_Sans({
   display: "swap",
 });
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://kp-web-katedral-pontianak.vercel.app";
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://katedralpontianak.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(APP_URL),
@@ -34,6 +34,7 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Paroki Katedral Santo Yosef Pontianak" }],
   creator: "Paroki Katedral Santo Yosef Pontianak",
+  applicationName: "Katedral Santo Yosef Pontianak",
   openGraph: {
     type: "website",
     locale: "id_ID",
