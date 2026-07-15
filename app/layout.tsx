@@ -71,6 +71,19 @@ export default function RootLayout({
       className={`${cormorant.variable} ${dmSans.variable} h-full antialiased`}
     >
       <head>
+        {/* Tambahkan kode script JSON-LD di bawah ini */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              "name": "Katedral Santo Yosef Pontianak",
+              "alternateName": ["Katedral Pontianak", "Paroki Katedral Pontianak"],
+              "url": "https://katedralpontianak.com/"
+            })
+          }}
+          />
         <link
           rel="preload"
           href="/bg-katedral-mobile.webp"
