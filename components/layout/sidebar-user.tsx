@@ -20,8 +20,14 @@ export function SidebarUser() {
   const [notifCount, setNotifCount] = useState(0);
 
   const handleLogout = async () => {
-    await authClient.signOut();
-    router.push("/masuk");
+    await authClient.signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          router.push("/masuk");
+          router.refresh(); // Memaksa browser membersihkan memori dashboard
+        },
+      },
+    });
   };
 
   useEffect(() => {
