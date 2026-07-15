@@ -41,7 +41,7 @@ export default function TambahKontenPage() {
   const [galleryCaption, setGalleryCaption] = useState("");
 
   const [coverCaption, setCoverCaption] = useState("");
-
+  const [author, setAuthor] = useState("Sekretariat Paroki");
   // Multi-upload & Cropping states
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadingCount, setUploadingCount] = useState(0);
@@ -197,7 +197,8 @@ export default function TambahKontenPage() {
         payload.body = JSON.stringify({ 
           html: form.body, 
           images: [], 
-          coverCaption: coverCaption 
+          coverCaption: coverCaption,
+          author: author 
         });
       } else if (payload.type === "ANNOUNCEMENT") {
         payload.category = "Pengumuman";
@@ -206,7 +207,7 @@ export default function TambahKontenPage() {
         }
         // If announcement has documentation photos, encode body as JSON
         if (galleryImages.length > 0) {
-          payload.body = JSON.stringify({ html: form.body, images: galleryImages });
+          payload.body = JSON.stringify({ html: form.body, images: galleryImages, author: author });
         }
       } else if (payload.type === "GALLERY") {
         // Store multiple images in body as JSON; first image is primary imageUrl
@@ -457,6 +458,19 @@ export default function TambahKontenPage() {
                 onChange={(e) => setCoverCaption(e.target.value)}
                 placeholder="cth: Ketua Komisi Komunikasi Sosial (Komsos), Konferensi Waligereja Indonesia (KWI)... Foto: Komsos KWI"
                 className="w-full h-11 px-4 border border-[#DDD8D0] rounded-md text-sm bg-white focus:border-[#B8960C] focus:ring-1 focus:ring-[#B8960C] outline-none italic text-[#6B6560]"
+              />
+            </div>
+            {/* TAMBAHAN BARU: Input Penulis / Dipublikasikan Oleh */}
+            <div className="pt-4 mt-2 border-t border-[#EDE8DF]">
+              <label className="block text-xs font-bold text-[#6B6560] uppercase tracking-wider mb-2">
+                Dipublikasikan Oleh <span className="text-[#A89880] font-normal">(Opsional)</span>
+              </label>
+              <input
+                type="text"
+                value={author}
+                onChange={(e) => setAuthor(e.target.value)}
+                placeholder="cth: Sekretariat Paroki"
+                className="w-full h-11 px-4 border border-[#DDD8D0] rounded-md text-sm bg-white focus:border-[#B8960C] focus:ring-1 focus:ring-[#B8960C] outline-none text-[#3D2B1F]"
               />
             </div>
           </div>

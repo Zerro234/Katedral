@@ -49,7 +49,7 @@ function parseGalleryBody(body: string | null, imageUrl: string | null): { image
 
 // Parse body for NEWS/ANNOUNCEMENT: supports JSON { html, images } or legacy plain HTML
 // Parse body for NEWS/ANNOUNCEMENT: supports JSON { html, images } or legacy plain HTML
-function parseNewsBody(body: string | null): { html: string; images: string[]; coverCaption?: string } {
+function parseNewsBody(body: string | null): { html: string; images: string[]; coverCaption?: string ; author?: string } {
   if (!body) return { html: "", images: [] };
   try {
     const parsed = JSON.parse(body);
@@ -57,7 +57,8 @@ function parseNewsBody(body: string | null): { html: string; images: string[]; c
       return {
         html: parsed.html || "",
         images: Array.isArray(parsed.images) ? parsed.images.filter(Boolean) : [],
-        coverCaption: parsed.coverCaption || "", // <-- TAMBAHAN BARU
+        coverCaption: parsed.coverCaption || "",
+        author: parsed.author || "Sekretariat Paroki",
       };
     }
     return { html: body, images: [] };
@@ -100,6 +101,7 @@ export default function EditKontenClient({ content }: { content: ContentItem }) 
   const [galleryCaption, setGalleryCaption] = useState(initGallery.caption);
 
   const [coverCaption, setCoverCaption] = useState(initNewsBody.coverCaption || "");
+  const [author, setAuthor] = useState(initNewsBody.author || "Sekretariat Paroki");
   // Multi-upload & Cropping states
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadingCount, setUploadingCount] = useState(0);
@@ -256,7 +258,7 @@ export default function EditKontenClient({ content }: { content: ContentItem }) 
           payload.imageUrl = galleryImages[0];
         }
         if (galleryImages.length > 0) {
-          payload.body = JSON.stringify({ html: form.body, images: galleryImages });
+          payload.body = JSON.stringify({ html: form.body, images: galleryImages, author: author });
         }
       } else if (payload.type === "ANNOUNCEMENT") {
         payload.category = "Pengumuman";
@@ -267,7 +269,8 @@ export default function EditKontenClient({ content }: { content: ContentItem }) 
         payload.body = JSON.stringify({ 
           html: form.body, 
           images: galleryImages,
-          coverCaption: coverCaption
+          coverCaption: coverCaption,
+          author: author
         });
       } else if (payload.type === "GALLERY") {
         payload.imageUrl = galleryImages[0] || "";
@@ -434,6 +437,19 @@ export default function EditKontenClient({ content }: { content: ContentItem }) 
               className="w-full h-11 px-4 border border-[#DDD8D0] rounded-md text-sm bg-white focus:border-[#B8960C] focus:ring-1 focus:ring-[#B8960C] outline-none italic text-[#6B6560]"
             />
           </div>
+          {/* TAMBAHAN BARU: Input Penulis / Dipublikasikan Oleh */}
+            <div className="pt-4 mt-2 border-t border-[#EDE8DF]">
+              <label className="block text-xs font-bold text-[#6B6560] uppercase tracking-wider mb-2">
+                Dipublikasikan Oleh <span className="text-[#A89880] font-normal">(Opsional)</span>
+              </label>
+              <input
+                type="text"
+                value={author}
+                onChange={(e) => setAuthor(e.target.value)}
+                placeholder="cth: Sekretariat Paroki"
+                className="w-full h-11 px-4 border border-[#DDD8D0] rounded-md text-sm bg-white focus:border-[#B8960C] focus:ring-1 focus:ring-[#B8960C] outline-none text-[#3D2B1F]"
+              />
+            </div>
         </div>
       )}
 

@@ -15,8 +15,8 @@ export const dynamic = "force-dynamic";
  * New format: { html: "<p>...</p>", images: ["url1", "url2"], coverCaption: "..." }
  * Legacy:     "<p>plain html content</p>"
  */
-function parseNewsBody(body: string | null): { html: string; images: string[]; coverCaption?: string } {
-  if (!body) return { html: "", images: [], coverCaption: "" };
+function parseNewsBody(body: string | null): { html: string; images: string[]; coverCaption?: string; author?: string } {
+  if (!body) return { html: "", images: [], coverCaption: "", author: "Sekretariat Paroki" };
 
   try {
     const parsed = JSON.parse(body);
@@ -25,7 +25,8 @@ function parseNewsBody(body: string | null): { html: string; images: string[]; c
         html: parsed.html || "",
         images: Array.isArray(parsed.images) ? parsed.images.filter(Boolean) : [],
         // PERBAIKAN: Menangkap keterangan cover dari JSON
-        coverCaption: parsed.coverCaption || "", 
+        coverCaption: parsed.coverCaption || "",
+        author: parsed.author || "Sekretariat Paroki", 
       };
     }
     // JSON but not our format — treat as plain text
@@ -49,8 +50,7 @@ export default async function BeritaDetailPage({ params }: { params: { slug: str
   }
 
   const news = newsRecord[0];
-  // PERBAIKAN: Mengambil coverCaption dari hasil parsing
-  const { html, images, coverCaption } = parseNewsBody(news.body);
+  const { html, images, coverCaption, author } = parseNewsBody(news.body);
 
   return (
     <div className="min-h-screen bg-[#FAF7F2]">
@@ -163,7 +163,7 @@ export default async function BeritaDetailPage({ params }: { params: { slug: str
           {/* Share & Footer */}
           <div className="mt-12 pt-8 border-t border-[#EDE8DF] flex justify-between items-center">
             <div className="text-sm font-medium text-[#A89880]">
-              Dipublikasikan oleh: <strong className="text-[#3D2B1F]">Sekretariat Paroki</strong>
+              Dipublikasikan oleh: <strong className="text-[#3D2B1F]">{author || "Sekretariat Paroki"}</strong>
             </div>
             <BeritaShareButton title={news.title} />
           </div>
