@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Loader2, Save, Plus, Trash2, Images, X, ArrowUp, ArrowDown, AlertTriangle } from "lucide-react";
@@ -13,8 +13,17 @@ import { createPortal } from "react-dom";
 import dynamic from "next/dynamic";
 import "react-quill-new/dist/quill.snow.css";
 
-// Memanggil komponen secara dinamis (wajib di Next.js)
-const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
+// Memanggil dan menggali trowongan komponen secara dinamis (wajib di Next.js)
+const ReactQuill = dynamic(
+  async () => {
+    const { default: RQ } = await import("react-quill-new");
+    // Membuat terowongan khusus agar 'ref' bisa menembus masuk ke dalam editor
+    return function EditorWrapper({ forwardedRef, ...props }: any) {
+      return <RQ ref={forwardedRef} {...props} />;
+    };
+  },
+  { ssr: false }
+);
 
 const CONTENT_TYPES = [
   { value: "NEWS", label: "Berita / Artikel" },
@@ -69,6 +78,60 @@ export default function TambahKontenPage() {
   // Max photos warning modal state
   const [showMaxPhotosModal, setShowMaxPhotosModal] = useState(false);
   const [maxPhotosModalMsg, setMaxPhotosModalMsg] = useState("");
+  const quillRef = useRef<any>(null);
+  
+  const imageHandler = () => {
+    const input = document.createElement("input");
+    input.setAttribute("type", "file");
+    input.setAttribute("accept", "image/*");
+    input.click();
+
+    input.onchange = async () => {
+      const file = input.files ? input.files[0] : null;
+      if (!file) return;
+
+      // Gunakan state loading yang sudah ada agar tombol simpan dinonaktifkan sementara
+      setLoading(true); 
+      const loadingToast = toast.loading("Mengunggah gambar ke dalam artikel...");
+
+      try {
+        // Panggil fungsi uploadFile Anda yang sudah ada!
+        const url = await uploadFile(file); 
+        
+        // Dapatkan posisi kursor saat ini di editor
+        const quill = quillRef.current?.getEditor();
+        if (quill) {
+          const range = quill.getSelection(true);
+          // Sisipkan gambar menggunakan URL bersih dari server
+          quill.insertEmbed(range.index, "image", url);
+          // Geser kursor ke sebelah kanan gambar
+          quill.setSelection(range.index + 1);
+        }
+        toast.success("Gambar berhasil disisipkan", { id: loadingToast });
+      } catch (err) {
+        toast.error("Gagal mengunggah gambar", { id: loadingToast });
+      } finally {
+        setLoading(false);
+      }
+    };
+  };
+
+  // 3. Konfigurasi Toolbar (Menu atas pada Editor)
+  const quillModules = useMemo(() => ({
+    toolbar: {
+      container: [
+        [{ header: [1, 2, 3, false] }],
+        ["bold", "italic", "underline"],
+        [{ list: "ordered" }, { list: "bullet" }],
+        [{ align: [] }],
+        ["link", "image"], // Tombol gambar
+        ["clean"],
+      ],
+      handlers: {
+        image: imageHandler, // Sambungkan tombol gambar ke fungsi pencegat kita
+      },
+    },
+  }), []);
 
   const handleDragStart = (e: React.DragEvent, index: number) => {
     setDraggedIdx(index);
@@ -425,10 +488,12 @@ export default function TambahKontenPage() {
             </label>
             <div className="bg-white rounded-md mb-12">
               <ReactQuill 
+                forwardedRef={quillRef} 
+                modules={quillModules}
                 theme="snow" 
                 value={form.body}
-                onChange={(content) => setForm(prev => ({ ...prev, body: content }))}
-                className="h-64"
+                onChange={(content: string) => setForm(prev => ({ ...prev, body: content }))}
+                className="h-64 pb-12 mb-12"
                 placeholder={isMassSchedule ? "Keterangan opsional mengenai jadwal misa..." : "Tulis isi berita atau pengumuman di sini..."}
               />
             </div>
