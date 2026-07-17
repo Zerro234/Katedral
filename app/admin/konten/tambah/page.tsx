@@ -10,6 +10,11 @@ import type { Area } from "react-easy-crop";
 import getCroppedImg from "@/lib/cropImage";
 import { toast } from "sonner";
 import { createPortal } from "react-dom";
+import dynamic from "next/dynamic";
+import "react-quill/dist/quill.snow.css"; // Mengimpor tema tampilan editor
+
+// Memanggil komponen secara dinamis (wajib di Next.js)
+const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
 const CONTENT_TYPES = [
   { value: "NEWS", label: "Berita / Artikel" },
@@ -284,8 +289,6 @@ export default function TambahKontenPage() {
           </div>
         </div>
 
-
-
         {/* Pengumuman Fields */}
         {form.type === "ANNOUNCEMENT" && (
           <div className="space-y-5 p-5 bg-[#F5F0E8] rounded-lg border border-[#EDE8DF]">
@@ -376,7 +379,6 @@ export default function TambahKontenPage() {
                   onChange={handleChange}
                   className="w-full h-11 px-4 border border-[#DDD8D0] rounded-md text-sm bg-white focus:border-[#B8960C] focus:ring-1 focus:ring-[#B8960C] outline-none"
                 >
-                  {/* UPDATE DI SINI: Value diubah menjadi 3 opsi yang spesifik */}
                   <option value="Misa Harian">Misa Harian</option>
                   <option value="Misa Mingguan">Misa Mingguan</option>
                   <option value="Misa Khusus">Misa Khusus</option>
@@ -414,27 +416,28 @@ export default function TambahKontenPage() {
           </div>
         )}
 
-        {/* Isi Konten — hidden for gallery */}
+        {/* Isi Konten (Menggunakan ReactQuill) — hidden for gallery */}
         {!isGallery && (
           <div>
             <label className="block text-xs font-bold text-[#6B6560] uppercase tracking-wider mb-2">
               {isMassSchedule ? "Keterangan Tambahan" : "Isi Konten / Artikel"}
               {!isMassSchedule && <span className="text-red-500"> *</span>}
             </label>
-            <textarea
-              name="body"
-              value={form.body}
-              onChange={handleChange}
-              rows={8}
-              placeholder={isMassSchedule ? "Keterangan opsional mengenai jadwal misa..." : "Tulis isi berita atau pengumuman di sini..."}
-              className="w-full px-4 py-3 border border-[#DDD8D0] rounded-md text-sm focus:border-[#B8960C] focus:ring-1 focus:ring-[#B8960C] outline-none resize-y"
-            />
+            <div className="bg-white rounded-md mb-12">
+              <ReactQuill 
+                theme="snow" 
+                value={form.body}
+                onChange={(content) => setForm(prev => ({ ...prev, body: content }))}
+                className="h-64"
+                placeholder={isMassSchedule ? "Keterangan opsional mengenai jadwal misa..." : "Tulis isi berita atau pengumuman di sini..."}
+              />
+            </div>
           </div>
         )}
 
         {/* URL Gambar Cover & Keterangan (News/Announcement only, not Gallery) */}
         {!isGallery && !isMassSchedule && (
-          <div className="space-y-4">
+          <div className="space-y-4 pt-4">
             <ImageUpload
               label="Gambar Cover (Opsional)"
               value={form.imageUrl}
