@@ -493,7 +493,7 @@ export default function TambahKontenPage() {
                 theme="snow" 
                 value={form.body}
                 onChange={(content: string) => setForm(prev => ({ ...prev, body: content }))}
-                className="h-64 pb-12 mb-12"
+                className="h-[700px] pb-12 mb-12"
                 placeholder={isMassSchedule ? "Keterangan opsional mengenai jadwal misa..." : "Tulis isi berita atau pengumuman di sini..."}
               />
             </div>
