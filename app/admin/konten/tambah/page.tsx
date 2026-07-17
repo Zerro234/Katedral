@@ -11,10 +11,10 @@ import getCroppedImg from "@/lib/cropImage";
 import { toast } from "sonner";
 import { createPortal } from "react-dom";
 import dynamic from "next/dynamic";
-import "react-quill/dist/quill.snow.css"; // Mengimpor tema tampilan editor
+import "react-quill-new/dist/quill.snow.css";
 
 // Memanggil komponen secara dinamis (wajib di Next.js)
-const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
+const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
 
 const CONTENT_TYPES = [
   { value: "NEWS", label: "Berita / Artikel" },
