@@ -7,8 +7,56 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import { NewsPhotoGallery } from "@/components/berita/NewsPhotoGallery";
 import { BeritaShareButton } from "@/components/berita/BeritaShareButton";
+import { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const { slug } = await params;
+  
+  const newsRecord = await db.select()
+    .from(contents)
+    .where(eq(contents.slug, slug))
+    .limit(1);
+
+  if (newsRecord.length === 0) {
+    return { title: "Berita Tidak Ditemukan" };
+  }
+
+  const news = newsRecord[0];
+  
+  // Membersihkan tag HTML untuk deskripsi singkat di WhatsApp
+  const rawDesc = news.body ? news.body.replace(/<[^>]+>/g, ' ') : "";
+  const plainTextDesc = rawDesc.substring(0, 150) + "...";
+  
+  const ogImageUrl = news.imageUrl || "https://katedralpontianak.com/bg-katedral.jpg"; // Gambar default jika berita tidak punya foto
+
+  return {
+    title: `${news.title} | Katedral Santo Yosef Pontianak`,
+    description: plainTextDesc,
+    openGraph: {
+      title: news.title,
+      description: plainTextDesc,
+      url: `https://katedralpontianak.com/berita/${slug}`,
+      siteName: "Katedral Santo Yosef Pontianak",
+      images: [
+        {
+          url: ogImageUrl,
+          width: 1200,
+          height: 630,
+          alt: news.title || "Gambar Berita",
+        }
+      ],
+      type: "article",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: news.title,
+      description: plainTextDesc,
+      images: [ogImageUrl],
+    }
+  };
+}
 
 /**
  * Parse body field: supports both legacy plain HTML and new JSON format.
