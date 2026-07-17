@@ -11,7 +11,7 @@ export default function SakramenPerkawinanPage() {
     { title: "Penyerahan Dokumen", desc: "Melengkapi seluruh berkas administratif (Surat Baptis terbaru, KTP, dll)." },
     { title: "Pengumuman Perkawinan", desc: "Diumumkan di Gereja selama 3 minggu berturut-turut untuk meminta dukungan doa umat." },
     { title: "Gladi Bersih", desc: "Latihan teknis upacara pemberkatan bersama saksi dan petugas liturgi." },
-    { title: "Pemberkatan & Pengambilan Surat", desc: "Hari bahagia peneguhan janji suci dan serah terima dokumen resmi gereja.", primary: true },
+    { title: "Pemberkatan", desc: "Hari bahagia peneguhan janji suci dan serah terima dokumen resmi gereja.", primary: true },
   ];
 
   const dokumenKatolik = [

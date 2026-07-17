@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json();
-  const { title, body: contentBody, type, category, eventDate, eventEndDate, location, imageUrl } = body;
+  const { title, body: contentBody, type, category, eventDate, eventEndDate, location, imageUrl, imageCaption, author} = body;
 
   if (!title || !type) {
     return NextResponse.json({ error: "Judul dan tipe konten wajib diisi." }, { status: 400 });
@@ -48,6 +48,8 @@ export async function POST(req: NextRequest) {
     eventEndDate: eventEndDate || null,
     location: location || null,
     imageUrl: imageUrl || null,
+    imageCaption: imageCaption || null,
+    author: author || "Sekretariat Paroki",
     createdBy: session.user.id,
     createdAt: now,
     updatedAt: now,
@@ -66,7 +68,7 @@ export async function PUT(req: NextRequest) {
   }
 
   const body = await req.json();
-  const { id, title, body: contentBody, type, category, eventDate, eventEndDate, location, imageUrl } = body;
+  const { id, title, body: contentBody, type, category, eventDate, eventEndDate, location, imageUrl, imageCaption, author } = body;
 
   if (!id) {
     return NextResponse.json({ error: "ID konten tidak ditemukan." }, { status: 400 });
@@ -86,6 +88,8 @@ export async function PUT(req: NextRequest) {
     eventEndDate: eventEndDate || null,
     location: location || null,
     imageUrl: imageUrl || null,
+    imageCaption: imageCaption || null,
+    author: author || "Sekretariat Paroki",
     updatedAt: new Date(),
   }).where(eq(contents.id, id));
 

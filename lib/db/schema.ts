@@ -185,6 +185,8 @@ export const contents = pgTable("contents", {
   slug: text("slug").unique(),
   body: text("body"),
   imageUrl: text("imageUrl"),
+  imageCaption: text("imageCaption"),
+  author: text("author"),
   location: text("location"),
   eventDate: text("eventDate"), // ISO datetime string
   eventEndDate: text("eventEndDate"), // ISO datetime string

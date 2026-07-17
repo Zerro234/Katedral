@@ -169,7 +169,7 @@ export default async function BeritaDetailPage({ params }: { params: { slug: str
           </div>
 
         </div>
-
+            
       </div>
 
     </div>

@@ -28,6 +28,8 @@ type ContentItem = {
   location: string | null;
   imageUrl: string | null;
   category: string | null;
+  imageCaption?: string | null;
+  author?: string | null;
 };
 
 // Parse body to extract gallery images & caption (GALLERY type)
@@ -100,8 +102,8 @@ export default function EditKontenClient({ content }: { content: ContentItem }) 
   );
   const [galleryCaption, setGalleryCaption] = useState(initGallery.caption);
 
-  const [coverCaption, setCoverCaption] = useState(initNewsBody.coverCaption || "");
-  const [author, setAuthor] = useState(initNewsBody.author || "Sekretariat Paroki");
+  const [coverCaption, setCoverCaption] = useState(content.imageCaption || initNewsBody.coverCaption || "");
+  const [author, setAuthor] = useState(content.author || initNewsBody.author || "Sekretariat Paroki");
   // Multi-upload & Cropping states
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadingCount, setUploadingCount] = useState(0);
@@ -249,7 +251,10 @@ export default function EditKontenClient({ content }: { content: ContentItem }) 
     setLoading(true);
 
     try {
-      const payload: Record<string, string> = { ...form };
+      const payload: Record<string, any> = { ...form };
+
+      payload.imageCaption = coverCaption;
+      payload.author = author;
       if (payload.type === "MASS_SCHEDULE") {
         payload.category = `${payload.massDay}::${payload.massType}`;
       } else if (payload.type === "NEWS") {
@@ -257,9 +262,7 @@ export default function EditKontenClient({ content }: { content: ContentItem }) 
         if (!payload.imageUrl && galleryImages.length > 0) {
           payload.imageUrl = galleryImages[0];
         }
-        if (galleryImages.length > 0) {
-          payload.body = JSON.stringify({ html: form.body, images: galleryImages, author: author });
-        }
+        payload.body = form.body;
       } else if (payload.type === "ANNOUNCEMENT") {
         payload.category = "Pengumuman";
         if (!payload.imageUrl && galleryImages.length > 0) {

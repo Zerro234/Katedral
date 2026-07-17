@@ -79,7 +79,7 @@ export function SidebarAdmin() {
               </p>
               <p className="text-[10px] uppercase tracking-wider"
                  style={{ color: "#9C8B7A", fontFamily: "var(--font-dm-sans)" }}>
-                Admin Sekretariat
+                Admin
               </p>
             </div>
           </div>

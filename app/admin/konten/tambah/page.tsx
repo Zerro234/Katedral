@@ -188,18 +188,15 @@ export default function TambahKontenPage() {
     setLoading(true);
 
     try {
-      const payload: Record<string, string> = { ...form };
+      const payload: Record<string, any> = { ...form };
+      payload.imageCaption = coverCaption;
+      payload.author = author;
       if (payload.type === "MASS_SCHEDULE") {
         payload.category = `${payload.massDay}::${payload.massType}`;
       } else if (payload.type === "NEWS") {
         payload.category = "Berita Paroki";
         // Selalu simpan body sebagai JSON untuk memasukkan html dan coverCaption
-        payload.body = JSON.stringify({ 
-          html: form.body, 
-          images: [], 
-          coverCaption: coverCaption,
-          author: author 
-        });
+        payload.body = form.body;
       } else if (payload.type === "ANNOUNCEMENT") {
         payload.category = "Pengumuman";
         if (!payload.imageUrl && galleryImages.length > 0) {
