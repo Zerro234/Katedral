@@ -12,11 +12,9 @@ export const dynamic = "force-dynamic";
 
 /**
  * Parse body field: supports both legacy plain HTML and new JSON format.
- * New format: { html: "<p>...</p>", images: ["url1", "url2"], coverCaption: "..." }
- * Legacy:     "<p>plain html content</p>"
  */
-function parseNewsBody(body: string | null): { html: string; images: string[]; coverCaption?: string; author?: string } {
-  if (!body) return { html: "", images: [], coverCaption: "", author: "Sekretariat Paroki" };
+function parseNewsBody(body: string | null): { html: string; images: string[]; parsedCaption?: string; parsedAuthor?: string } {
+  if (!body) return { html: "", images: [], parsedCaption: "", parsedAuthor: "" };
 
   try {
     const parsed = JSON.parse(body);
@@ -24,16 +22,13 @@ function parseNewsBody(body: string | null): { html: string; images: string[]; c
       return {
         html: parsed.html || "",
         images: Array.isArray(parsed.images) ? parsed.images.filter(Boolean) : [],
-        // PERBAIKAN: Menangkap keterangan cover dari JSON
-        coverCaption: parsed.coverCaption || "",
-        author: parsed.author || "Sekretariat Paroki", 
+        parsedCaption: parsed.coverCaption || "",
+        parsedAuthor: parsed.author || "", 
       };
     }
-    // JSON but not our format — treat as plain text
-    return { html: body, images: [], coverCaption: "" };
+    return { html: body, images: [], parsedCaption: "" };
   } catch {
-    // Not JSON — legacy plain HTML
-    return { html: body, images: [], coverCaption: "" };
+    return { html: body, images: [], parsedCaption: "" };
   }
 }
 
@@ -50,7 +45,11 @@ export default async function BeritaDetailPage({ params }: { params: { slug: str
   }
 
   const news = newsRecord[0];
-  const { html, images, coverCaption, author } = parseNewsBody(news.body);
+  const { html, images, parsedCaption, parsedAuthor } = parseNewsBody(news.body);
+
+  // PERBAIKAN UTAMA: Tarik data langsung dari kolom database (prioritas pertama)
+  const finalAuthor = news.author || parsedAuthor || "Sekretariat Paroki";
+  const finalCaption = news.imageCaption || parsedCaption || "";
 
   return (
     <div className="min-h-screen bg-[#FAF7F2]">
@@ -104,16 +103,16 @@ export default async function BeritaDetailPage({ params }: { params: { slug: str
                 />
               </div>
               
-              {/* PERBAIKAN: Menampilkan Teks Keterangan Cover di Bawah Gambar */}
-              {coverCaption && (
+              {/* PERBAIKAN: Variabel dipanggil menggunakan finalCaption */}
+              {finalCaption && (
                 <p className="mt-3 text-sm md:text-base italic text-[#6B5744] text-left leading-relaxed">
-                  {coverCaption}
+                  {finalCaption}
                 </p>
               )}
             </div>
           )}
 
-          {/* 2. KOTAK INFO TANGGAL/LOKASI: Disembunyikan untuk Berita (NEWS), hanya tampil untuk Pengumuman/Misa */}
+          {/* 2. KOTAK INFO TANGGAL/LOKASI */}
           {news.type !== "NEWS" && (news.eventDate || news.location) && (
             <div className="mb-8 p-5 bg-[#F5F0E8] rounded-xl border border-[#EDE8DF] flex flex-col sm:flex-row flex-wrap gap-4 sm:gap-8">
               {news.eventDate && (
@@ -149,7 +148,7 @@ export default async function BeritaDetailPage({ params }: { params: { slug: str
             </div>
           )}
 
-          {/* 3. ISI KONTEN (Hanya dipanggil satu kali) */}
+          {/* 3. ISI KONTEN */}
           <div
             className="whitespace-pre-wrap prose prose-stone max-w-none text-[#4A3728] prose-p:leading-relaxed prose-p:mb-5 prose-a:text-[#B8960C] prose-a:font-semibold prose-headings:font-bold prose-headings:text-[#3D2B1F] prose-strong:text-[#3D2B1F] prose-li:mb-1"
             dangerouslySetInnerHTML={{ __html: html }}
@@ -163,7 +162,8 @@ export default async function BeritaDetailPage({ params }: { params: { slug: str
           {/* Share & Footer */}
           <div className="mt-12 pt-8 border-t border-[#EDE8DF] flex justify-between items-center">
             <div className="text-sm font-medium text-[#A89880]">
-              Dipublikasikan oleh: <strong className="text-[#3D2B1F]">{author || "Sekretariat Paroki"}</strong>
+              {/* PERBAIKAN: Variabel dipanggil menggunakan finalAuthor */}
+              Dipublikasikan oleh: <strong className="text-[#3D2B1F]">{finalAuthor}</strong>
             </div>
             <BeritaShareButton title={news.title} />
           </div>
