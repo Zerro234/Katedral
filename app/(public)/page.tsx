@@ -470,62 +470,64 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      {/* ═══════════════════ QUICK INFORMATION CARDS (Pindahan dari Atas) ═══════════════════ */}
-      <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto py-16 md:py-24 relative z-20 w-full bg-white">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-12">
-          {/* Card 1 */}
-          <ScrollReveal delay={100} className="h-full">
-            <div className="bg-white p-8 md:p-10 rounded-2xl shadow-elegant border border-[#EDE8DF] flex flex-col h-full group hover:-translate-y-2 transition-all duration-500">
-              <div className="w-14 h-14 bg-[#FAF7F2] rounded-full flex items-center justify-center mb-6 group-hover:bg-[#B8960C] transition-colors duration-500">
-                <Calendar className="text-[#B8960C] h-6 w-6 group-hover:text-white transition-colors duration-500" />
+      {/* ═══════════════════ QUICK INFORMATION CARDS (Sekarang di bawah Agenda Umat) ═══════════════════ */}
+      <section className="py-16 md:py-24 relative z-20 w-full bg-[#F5F0E8]">
+        <div className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-12">
+            {/* Card 1 */}
+            <ScrollReveal delay={100} className="h-full">
+              <div className="bg-white p-8 md:p-10 rounded-2xl shadow-elegant border border-[#EDE8DF] flex flex-col h-full group hover:-translate-y-2 transition-all duration-500">
+                <div className="w-14 h-14 bg-[#FAF7F2] rounded-full flex items-center justify-center mb-6 group-hover:bg-[#B8960C] transition-colors duration-500">
+                  <Calendar className="text-[#B8960C] h-6 w-6 group-hover:text-white transition-colors duration-500" />
+                </div>
+                <h3 className="text-2xl font-bold text-[#3D2B1F] mb-4" style={{ fontFamily: "var(--font-cormorant)" }}>
+                  Jadwal Misa Hari Ini
+                </h3>
+                <p className="text-[#6B6560] text-base leading-relaxed flex-grow font-light mb-8">
+                  Informasi waktu pelaksanaan misa harian dan akhir pekan di Katedral.
+                </p>
+                <Link href="/jadwal-misa" className="text-[#B8960C] text-sm font-bold tracking-wider uppercase flex items-center gap-2 group/link w-fit">
+                  Lihat Selengkapnya <ArrowUpRight className="h-4 w-4 group-hover/link:translate-x-1 group-hover/link:-translate-y-1 transition-transform" />
+                </Link>
               </div>
-              <h3 className="text-2xl font-bold text-[#3D2B1F] mb-4" style={{ fontFamily: "var(--font-cormorant)" }}>
-                Jadwal Misa Hari Ini
-              </h3>
-              <p className="text-[#6B6560] text-base leading-relaxed flex-grow font-light mb-8">
-                Informasi waktu pelaksanaan misa harian dan akhir pekan di Katedral.
-              </p>
-              <Link href="/jadwal-misa" className="text-[#B8960C] text-sm font-bold tracking-wider uppercase flex items-center gap-2 group/link w-fit">
-                Lihat Selengkapnya <ArrowUpRight className="h-4 w-4 group-hover/link:translate-x-1 group-hover/link:-translate-y-1 transition-transform" />
-              </Link>
-            </div>
-          </ScrollReveal>
-          
-          {/* Card 2 */}
-          <ScrollReveal delay={200} className="h-full">
-            <div className="bg-white p-8 md:p-10 rounded-2xl shadow-elegant border border-[#EDE8DF] flex flex-col h-full group hover:-translate-y-2 transition-all duration-500">
-              <div className="w-14 h-14 bg-[#FAF7F2] rounded-full flex items-center justify-center mb-6 group-hover:bg-[#B8960C] transition-colors duration-500">
-                <Newspaper className="text-[#B8960C] h-6 w-6 group-hover:text-white transition-colors duration-500" />
+            </ScrollReveal>
+            
+            {/* Card 2 */}
+            <ScrollReveal delay={200} className="h-full">
+              <div className="bg-white p-8 md:p-10 rounded-2xl shadow-elegant border border-[#EDE8DF] flex flex-col h-full group hover:-translate-y-2 transition-all duration-500">
+                <div className="w-14 h-14 bg-[#FAF7F2] rounded-full flex items-center justify-center mb-6 group-hover:bg-[#B8960C] transition-colors duration-500">
+                  <Newspaper className="text-[#B8960C] h-6 w-6 group-hover:text-white transition-colors duration-500" />
+                </div>
+                <h3 className="text-2xl font-bold text-[#3D2B1F] mb-4" style={{ fontFamily: "var(--font-cormorant)" }}>
+                  Berita Terbaru
+                </h3>
+                <p className="text-[#6B6560] text-base leading-relaxed flex-grow font-light mb-8">
+                  Pengumuman paroki, kegiatan umat, dan pesan gembala terkini.
+                </p>
+                <Link href="/berita" className="text-[#B8960C] text-sm font-bold tracking-wider uppercase flex items-center gap-2 group/link w-fit">
+                  Lihat Selengkapnya <ArrowUpRight className="h-4 w-4 group-hover/link:translate-x-1 group-hover/link:-translate-y-1 transition-transform" />
+                </Link>
               </div>
-              <h3 className="text-2xl font-bold text-[#3D2B1F] mb-4" style={{ fontFamily: "var(--font-cormorant)" }}>
-                Berita Terbaru
-              </h3>
-              <p className="text-[#6B6560] text-base leading-relaxed flex-grow font-light mb-8">
-                Pengumuman paroki, kegiatan umat, dan pesan gembala terkini.
-              </p>
-              <Link href="/berita" className="text-[#B8960C] text-sm font-bold tracking-wider uppercase flex items-center gap-2 group/link w-fit">
-                Lihat Selengkapnya <ArrowUpRight className="h-4 w-4 group-hover/link:translate-x-1 group-hover/link:-translate-y-1 transition-transform" />
-              </Link>
-            </div>
-          </ScrollReveal>
+            </ScrollReveal>
 
-          {/* Card 3 */}
-          <ScrollReveal delay={300} className="h-full">
-            <div className="bg-white p-8 md:p-10 rounded-2xl shadow-elegant border border-[#EDE8DF] flex flex-col h-full group hover:-translate-y-2 transition-all duration-500">
-              <div className="w-14 h-14 bg-[#FAF7F2] rounded-full flex items-center justify-center mb-6 group-hover:bg-[#B8960C] transition-colors duration-500">
-                <BookOpen className="text-[#B8960C] h-6 w-6 group-hover:text-white transition-colors duration-500" />
+            {/* Card 3 */}
+            <ScrollReveal delay={300} className="h-full">
+              <div className="bg-white p-8 md:p-10 rounded-2xl shadow-elegant border border-[#EDE8DF] flex flex-col h-full group hover:-translate-y-2 transition-all duration-500">
+                <div className="w-14 h-14 bg-[#FAF7F2] rounded-full flex items-center justify-center mb-6 group-hover:bg-[#B8960C] transition-colors duration-500">
+                  <BookOpen className="text-[#B8960C] h-6 w-6 group-hover:text-white transition-colors duration-500" />
+                </div>
+                <h3 className="text-2xl font-bold text-[#3D2B1F] mb-4" style={{ fontFamily: "var(--font-cormorant)" }}>
+                  Panduan Sakramen
+                </h3>
+                <p className="text-[#6B6560] text-base leading-relaxed flex-grow font-light mb-8">
+                  Persyaratan dan langkah-langkah untuk menerima sakramen gereja.
+                </p>
+                <Link href="/daftar" className="text-[#B8960C] text-sm font-bold tracking-wider uppercase flex items-center gap-2 group/link w-fit">
+                  Lihat Selengkapnya <ArrowUpRight className="h-4 w-4 group-hover/link:translate-x-1 group-hover/link:-translate-y-1 transition-transform" />
+                </Link>
               </div>
-              <h3 className="text-2xl font-bold text-[#3D2B1F] mb-4" style={{ fontFamily: "var(--font-cormorant)" }}>
-                Panduan Sakramen
-              </h3>
-              <p className="text-[#6B6560] text-base leading-relaxed flex-grow font-light mb-8">
-                Persyaratan dan langkah-langkah untuk menerima sakramen gereja.
-              </p>
-              <Link href="/daftar" className="text-[#B8960C] text-sm font-bold tracking-wider uppercase flex items-center gap-2 group/link w-fit">
-                Lihat Selengkapnya <ArrowUpRight className="h-4 w-4 group-hover/link:translate-x-1 group-hover/link:-translate-y-1 transition-transform" />
-              </Link>
-            </div>
-          </ScrollReveal>
+            </ScrollReveal>
+          </div>
         </div>
       </section>
 
