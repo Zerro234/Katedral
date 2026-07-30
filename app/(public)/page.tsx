@@ -36,7 +36,8 @@ export default async function LandingPage() {
     .from(marriageApplications)
     .innerJoin(coupleProfiles, eq(marriageApplications.coupleProfileId, coupleProfiles.id))
     .where(eq(marriageApplications.currentStage, 5));
-const getDayName = (rawStr: string | undefined | null): string => {
+    
+  const getDayName = (rawStr: string | undefined | null): string => {
     if (!rawStr) return "";
     const prefix = rawStr.split("::")[0];
     const dateObj = new Date(prefix);
@@ -102,7 +103,6 @@ const getDayName = (rawStr: string | undefined | null): string => {
 
     groupedHarian.push({ label, time: `${time} WIB`, subtitle, key: `h-${time}-${label}` });
   }
-
 
   // === 2. Filter Misa Mingguan ===
   const rawMingguan = allMasses.filter(m => 
@@ -240,139 +240,8 @@ const getDayName = (rawStr: string | undefined | null): string => {
         </div>
       </section>
 
-      {/* ═══════════════════ QUICK INFORMATION CARDS ═══════════════════ */}
-      <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto pt-12 sm:pt-16 md:pt-20 relative z-20 w-full mb-16 md:mb-24">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-12">
-          {/* Card 1 */}
-          <ScrollReveal delay={100} className="h-full">
-            <div className="bg-white p-8 md:p-10 rounded-2xl shadow-elegant border border-white/60 flex flex-col h-full group hover:-translate-y-2 transition-all duration-500 backdrop-blur-sm">
-              <div className="w-14 h-14 bg-[#FAF7F2] rounded-full flex items-center justify-center mb-6 group-hover:bg-[#B8960C] transition-colors duration-500">
-                <Calendar className="text-[#B8960C] h-6 w-6 group-hover:text-white transition-colors duration-500" />
-              </div>
-              <h3 className="text-2xl font-bold text-[#3D2B1F] mb-4" style={{ fontFamily: "var(--font-cormorant)" }}>
-                Jadwal Misa Hari Ini
-              </h3>
-              <p className="text-[#6B6560] text-base leading-relaxed flex-grow font-light mb-8">
-                Informasi waktu pelaksanaan misa harian dan akhir pekan di Katedral.
-              </p>
-              <Link href="/jadwal-misa" className="text-[#B8960C] text-sm font-bold tracking-wider uppercase flex items-center gap-2 group/link w-fit">
-                Lihat Selengkapnya <ArrowUpRight className="h-4 w-4 group-hover/link:translate-x-1 group-hover/link:-translate-y-1 transition-transform" />
-              </Link>
-            </div>
-          </ScrollReveal>
-          
-          {/* Card 2 */}
-          <ScrollReveal delay={200} className="h-full">
-            <div className="bg-white p-8 md:p-10 rounded-2xl shadow-elegant border border-white/60 flex flex-col h-full group hover:-translate-y-2 transition-all duration-500 backdrop-blur-sm">
-              <div className="w-14 h-14 bg-[#FAF7F2] rounded-full flex items-center justify-center mb-6 group-hover:bg-[#B8960C] transition-colors duration-500">
-                <Newspaper className="text-[#B8960C] h-6 w-6 group-hover:text-white transition-colors duration-500" />
-              </div>
-              <h3 className="text-2xl font-bold text-[#3D2B1F] mb-4" style={{ fontFamily: "var(--font-cormorant)" }}>
-                Berita Terbaru
-              </h3>
-              <p className="text-[#6B6560] text-base leading-relaxed flex-grow font-light mb-8">
-                Pengumuman paroki, kegiatan umat, dan pesan gembala terkini.
-              </p>
-              <Link href="/berita" className="text-[#B8960C] text-sm font-bold tracking-wider uppercase flex items-center gap-2 group/link w-fit">
-                Lihat Selengkapnya <ArrowUpRight className="h-4 w-4 group-hover/link:translate-x-1 group-hover/link:-translate-y-1 transition-transform" />
-              </Link>
-            </div>
-          </ScrollReveal>
-
-          {/* Card 3 */}
-          <ScrollReveal delay={300} className="h-full">
-            <div className="bg-white p-8 md:p-10 rounded-2xl shadow-elegant border border-white/60 flex flex-col h-full group hover:-translate-y-2 transition-all duration-500 backdrop-blur-sm">
-              <div className="w-14 h-14 bg-[#FAF7F2] rounded-full flex items-center justify-center mb-6 group-hover:bg-[#B8960C] transition-colors duration-500">
-                <BookOpen className="text-[#B8960C] h-6 w-6 group-hover:text-white transition-colors duration-500" />
-              </div>
-              <h3 className="text-2xl font-bold text-[#3D2B1F] mb-4" style={{ fontFamily: "var(--font-cormorant)" }}>
-                Panduan Sakramen
-              </h3>
-              <p className="text-[#6B6560] text-base leading-relaxed flex-grow font-light mb-8">
-                Persyaratan dan langkah-langkah untuk menerima sakramen gereja.
-              </p>
-              <Link href="/daftar" className="text-[#B8960C] text-sm font-bold tracking-wider uppercase flex items-center gap-2 group/link w-fit">
-                Lihat Selengkapnya <ArrowUpRight className="h-4 w-4 group-hover/link:translate-x-1 group-hover/link:-translate-y-1 transition-transform" />
-              </Link>
-            </div>
-          </ScrollReveal>
-        </div>
-      </section>
-
-      {/* ═══════════════════ JADWAL MISA PREVIEW ═══════════════════ */}
-      <section className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-[#FAF7F2]">
-        <div className="max-w-7xl mx-auto">
-          <ScrollReveal>
-            <div className="text-center mb-10 md:mb-16 flex flex-col items-center">
-              <div className="h-12 w-px bg-[#B8960C]/50 mb-6" />
-              <span className="font-sans text-xs tracking-[0.25em] text-[#B8960C] uppercase font-bold mb-4">
-                Peribadatan
-              </span>
-              <h2 className="text-4xl md:text-5xl text-[#3D2B1F] font-bold text-center" style={{ fontFamily: "var(--font-cormorant)" }}>
-                Jadwal Misa Katedral
-              </h2>
-            </div>
-          </ScrollReveal>
-
-          <ScrollReveal delay={200}>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-0 max-w-5xl mx-auto bg-white rounded-2xl shadow-elegant overflow-hidden">
-              {/* Misa Harian */}
-              <div className="p-8 md:p-12 border-b md:border-b-0 md:border-r border-[#EDE8DF] relative">
-                <div className="absolute top-0 left-0 w-1 h-full bg-[#B8960C]/20" />
-                <h3 className="text-2xl md:text-3xl text-[#3D2B1F] mb-6 md:mb-8 font-bold" style={{ fontFamily: "var(--font-cormorant)" }}>
-                  Misa Harian
-                </h3>
-                <ul className="space-y-4 md:space-y-6">
-                  {groupedHarian.length > 0 ? groupedHarian.map((g) => (
-                    <li key={g.key} className="flex flex-row justify-between items-center gap-4 group w-full">
-                      <div className="flex flex-col">
-                        <span className="font-medium text-[#6B6560] group-hover:text-[#3D2B1F] transition-colors">{g.label}</span>
-                        {g.subtitle && <span className="text-xs text-[#9C8B7A]">{g.subtitle}</span>}
-                      </div>
-                      <span className="font-semibold text-[#B8960C] bg-[#FFF8E1] px-4 py-1.5 rounded-full text-sm w-fit whitespace-nowrap">{g.time}</span>
-                    </li>
-                  )) : (
-                    <li className="text-[#9C8B7A] italic text-sm">Belum ada jadwal</li>
-                  )}
-                </ul>
-              </div>
-              
-              {/* Misa Mingguan */}
-              <div className="p-8 md:p-12 relative">
-                <div className="absolute top-0 right-0 w-1 h-full bg-[#B8960C]" />
-                <h3 className="text-2xl md:text-3xl text-[#3D2B1F] mb-6 md:mb-8 font-bold" style={{ fontFamily: "var(--font-cormorant)" }}>
-                  Misa Mingguan
-                </h3>
-                <ul className="space-y-4 md:space-y-6">
-                  {groupedMingguan.length > 0 ? groupedMingguan.map((g) => (
-                    <li key={g.key} className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 group">
-                      <div className="flex flex-col">
-                        <span className="font-medium text-[#6B6560] group-hover:text-[#3D2B1F] transition-colors">{g.label}</span>
-                        {g.subtitle && <span className="text-xs text-[#9C8B7A]">{g.subtitle}</span>}
-                      </div>
-                      <span className="font-semibold text-[#B8960C] bg-[#FFF8E1] px-4 py-1.5 rounded-full text-sm w-fit whitespace-nowrap">{g.time}</span>
-                    </li>
-                  )) : (
-                    <li className="text-[#9C8B7A] italic text-sm">Belum ada jadwal.</li>
-                  )}
-                </ul>
-              </div>
-            </div>
-          </ScrollReveal>
-
-          <ScrollReveal delay={400}>
-            <div className="text-center mt-12">
-              <Link href="/jadwal-misa" className="inline-flex items-center justify-center bg-transparent border border-[#3D2B1F] text-[#3D2B1F] px-8 py-3 rounded-sm font-sans text-sm tracking-wide font-semibold hover:bg-[#3D2B1F] hover:text-white transition-all duration-300">
-                Lihat Semua Jadwal
-              </Link>
-            </div>
-          </ScrollReveal>
-        </div>
-      </section>
-
-      {/* ═══════════════════ BERITA TERBARU ═══════════════════ */}
-      <section className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-white relative">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-px bg-gradient-to-r from-transparent via-[#DDD8D0] to-transparent max-w-7xl" />
+      {/* ═══════════════════ BERITA TERBARU (Pindahan dari Bawah) ═══════════════════ */}
+      <section className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-white relative z-20">
         <div className="max-w-7xl mx-auto">
           <ScrollReveal>
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 md:mb-16 gap-6">
@@ -449,6 +318,136 @@ const getDayName = (rawStr: string | undefined | null): string => {
               </div>
             )}
           </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════ JADWAL MISA PREVIEW ═══════════════════ */}
+      <section className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-[#FAF7F2]">
+        <div className="max-w-7xl mx-auto">
+          <ScrollReveal>
+            <div className="text-center mb-10 md:mb-16 flex flex-col items-center">
+              <div className="h-12 w-px bg-[#B8960C]/50 mb-6" />
+              <span className="font-sans text-xs tracking-[0.25em] text-[#B8960C] uppercase font-bold mb-4">
+                Peribadatan
+              </span>
+              <h2 className="text-4xl md:text-5xl text-[#3D2B1F] font-bold text-center" style={{ fontFamily: "var(--font-cormorant)" }}>
+                Jadwal Misa Katedral
+              </h2>
+            </div>
+          </ScrollReveal>
+
+          <ScrollReveal delay={200}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-0 max-w-5xl mx-auto bg-white rounded-2xl shadow-elegant overflow-hidden">
+              {/* Misa Harian */}
+              <div className="p-8 md:p-12 border-b md:border-b-0 md:border-r border-[#EDE8DF] relative">
+                <div className="absolute top-0 left-0 w-1 h-full bg-[#B8960C]/20" />
+                <h3 className="text-2xl md:text-3xl text-[#3D2B1F] mb-6 md:mb-8 font-bold" style={{ fontFamily: "var(--font-cormorant)" }}>
+                  Misa Harian
+                </h3>
+                <ul className="space-y-4 md:space-y-6">
+                  {groupedHarian.length > 0 ? groupedHarian.map((g) => (
+                    <li key={g.key} className="flex flex-row justify-between items-center gap-4 group w-full">
+                      <div className="flex flex-col">
+                        <span className="font-medium text-[#6B6560] group-hover:text-[#3D2B1F] transition-colors">{g.label}</span>
+                        {g.subtitle && <span className="text-xs text-[#9C8B7A]">{g.subtitle}</span>}
+                      </div>
+                      <span className="font-semibold text-[#B8960C] bg-[#FFF8E1] px-4 py-1.5 rounded-full text-sm w-fit whitespace-nowrap">{g.time}</span>
+                    </li>
+                  )) : (
+                    <li className="text-[#9C8B7A] italic text-sm">Belum ada jadwal</li>
+                  )}
+                </ul>
+              </div>
+              
+              {/* Misa Mingguan */}
+              <div className="p-8 md:p-12 relative">
+                <div className="absolute top-0 right-0 w-1 h-full bg-[#B8960C]" />
+                <h3 className="text-2xl md:text-3xl text-[#3D2B1F] mb-6 md:mb-8 font-bold" style={{ fontFamily: "var(--font-cormorant)" }}>
+                  Misa Mingguan
+                </h3>
+                <ul className="space-y-4 md:space-y-6">
+                  {groupedMingguan.length > 0 ? groupedMingguan.map((g) => (
+                    <li key={g.key} className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 group">
+                      <div className="flex flex-col">
+                        <span className="font-medium text-[#6B6560] group-hover:text-[#3D2B1F] transition-colors">{g.label}</span>
+                        {g.subtitle && <span className="text-xs text-[#9C8B7A]">{g.subtitle}</span>}
+                      </div>
+                      <span className="font-semibold text-[#B8960C] bg-[#FFF8E1] px-4 py-1.5 rounded-full text-sm w-fit whitespace-nowrap">{g.time}</span>
+                    </li>
+                  )) : (
+                    <li className="text-[#9C8B7A] italic text-sm">Belum ada jadwal.</li>
+                  )}
+                </ul>
+              </div>
+            </div>
+          </ScrollReveal>
+
+          <ScrollReveal delay={400}>
+            <div className="text-center mt-12">
+              <Link href="/jadwal-misa" className="inline-flex items-center justify-center bg-transparent border border-[#3D2B1F] text-[#3D2B1F] px-8 py-3 rounded-sm font-sans text-sm tracking-wide font-semibold hover:bg-[#3D2B1F] hover:text-white transition-all duration-300">
+                Lihat Semua Jadwal
+              </Link>
+            </div>
+          </ScrollReveal>
+        </div>
+      </section>
+
+      {/* ═══════════════════ QUICK INFORMATION CARDS (Pindahan dari Atas) ═══════════════════ */}
+      <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto py-16 md:py-24 relative z-20 w-full bg-white">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-12">
+          {/* Card 1 */}
+          <ScrollReveal delay={100} className="h-full">
+            <div className="bg-white p-8 md:p-10 rounded-2xl shadow-elegant border border-[#EDE8DF] flex flex-col h-full group hover:-translate-y-2 transition-all duration-500">
+              <div className="w-14 h-14 bg-[#FAF7F2] rounded-full flex items-center justify-center mb-6 group-hover:bg-[#B8960C] transition-colors duration-500">
+                <Calendar className="text-[#B8960C] h-6 w-6 group-hover:text-white transition-colors duration-500" />
+              </div>
+              <h3 className="text-2xl font-bold text-[#3D2B1F] mb-4" style={{ fontFamily: "var(--font-cormorant)" }}>
+                Jadwal Misa Hari Ini
+              </h3>
+              <p className="text-[#6B6560] text-base leading-relaxed flex-grow font-light mb-8">
+                Informasi waktu pelaksanaan misa harian dan akhir pekan di Katedral.
+              </p>
+              <Link href="/jadwal-misa" className="text-[#B8960C] text-sm font-bold tracking-wider uppercase flex items-center gap-2 group/link w-fit">
+                Lihat Selengkapnya <ArrowUpRight className="h-4 w-4 group-hover/link:translate-x-1 group-hover/link:-translate-y-1 transition-transform" />
+              </Link>
+            </div>
+          </ScrollReveal>
+          
+          {/* Card 2 */}
+          <ScrollReveal delay={200} className="h-full">
+            <div className="bg-white p-8 md:p-10 rounded-2xl shadow-elegant border border-[#EDE8DF] flex flex-col h-full group hover:-translate-y-2 transition-all duration-500">
+              <div className="w-14 h-14 bg-[#FAF7F2] rounded-full flex items-center justify-center mb-6 group-hover:bg-[#B8960C] transition-colors duration-500">
+                <Newspaper className="text-[#B8960C] h-6 w-6 group-hover:text-white transition-colors duration-500" />
+              </div>
+              <h3 className="text-2xl font-bold text-[#3D2B1F] mb-4" style={{ fontFamily: "var(--font-cormorant)" }}>
+                Berita Terbaru
+              </h3>
+              <p className="text-[#6B6560] text-base leading-relaxed flex-grow font-light mb-8">
+                Pengumuman paroki, kegiatan umat, dan pesan gembala terkini.
+              </p>
+              <Link href="/berita" className="text-[#B8960C] text-sm font-bold tracking-wider uppercase flex items-center gap-2 group/link w-fit">
+                Lihat Selengkapnya <ArrowUpRight className="h-4 w-4 group-hover/link:translate-x-1 group-hover/link:-translate-y-1 transition-transform" />
+              </Link>
+            </div>
+          </ScrollReveal>
+
+          {/* Card 3 */}
+          <ScrollReveal delay={300} className="h-full">
+            <div className="bg-white p-8 md:p-10 rounded-2xl shadow-elegant border border-[#EDE8DF] flex flex-col h-full group hover:-translate-y-2 transition-all duration-500">
+              <div className="w-14 h-14 bg-[#FAF7F2] rounded-full flex items-center justify-center mb-6 group-hover:bg-[#B8960C] transition-colors duration-500">
+                <BookOpen className="text-[#B8960C] h-6 w-6 group-hover:text-white transition-colors duration-500" />
+              </div>
+              <h3 className="text-2xl font-bold text-[#3D2B1F] mb-4" style={{ fontFamily: "var(--font-cormorant)" }}>
+                Panduan Sakramen
+              </h3>
+              <p className="text-[#6B6560] text-base leading-relaxed flex-grow font-light mb-8">
+                Persyaratan dan langkah-langkah untuk menerima sakramen gereja.
+              </p>
+              <Link href="/daftar" className="text-[#B8960C] text-sm font-bold tracking-wider uppercase flex items-center gap-2 group/link w-fit">
+                Lihat Selengkapnya <ArrowUpRight className="h-4 w-4 group-hover/link:translate-x-1 group-hover/link:-translate-y-1 transition-transform" />
+              </Link>
+            </div>
+          </ScrollReveal>
         </div>
       </section>
 
