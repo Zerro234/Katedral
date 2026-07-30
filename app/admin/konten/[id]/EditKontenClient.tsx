@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Loader2, Save, Plus, Trash2, Images, ArrowUp, ArrowDown, X, AlertTriangle } from "lucide-react";
@@ -10,6 +10,21 @@ import type { Area } from "react-easy-crop";
 import getCroppedImg from "@/lib/cropImage";
 import { toast } from "sonner";
 import { createPortal } from "react-dom";
+
+// TAMBAHAN: Import ReactQuill dan CSS-nya
+import dynamic from "next/dynamic";
+import "react-quill-new/dist/quill.snow.css";
+
+// TAMBAHAN: Komponen dinamis dengan terowongan ref untuk React 19
+const ReactQuill = dynamic(
+  async () => {
+    const { default: RQ } = await import("react-quill-new");
+    return function EditorWrapper({ forwardedRef, ...props }: any) {
+      return <RQ ref={forwardedRef} {...props} />;
+    };
+  },
+  { ssr: false }
+);
 
 const CONTENT_TYPES = [
   { value: "NEWS", label: "Berita / Artikel" },
@@ -49,7 +64,6 @@ function parseGalleryBody(body: string | null, imageUrl: string | null): { image
   }
 }
 
-// Parse body for NEWS/ANNOUNCEMENT: supports JSON { html, images } or legacy plain HTML
 // Parse body for NEWS/ANNOUNCEMENT: supports JSON { html, images } or legacy plain HTML
 function parseNewsBody(body: string | null): { html: string; images: string[]; coverCaption?: string ; author?: string } {
   if (!body) return { html: "", images: [] };
@@ -104,6 +118,7 @@ export default function EditKontenClient({ content }: { content: ContentItem }) 
 
   const [coverCaption, setCoverCaption] = useState(content.imageCaption || initNewsBody.coverCaption || "");
   const [author, setAuthor] = useState(content.author || initNewsBody.author || "Sekretariat Paroki");
+  
   // Multi-upload & Cropping states
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadingCount, setUploadingCount] = useState(0);
@@ -126,6 +141,57 @@ export default function EditKontenClient({ content }: { content: ContentItem }) 
   // Max photos warning modal state
   const [showMaxPhotosModal, setShowMaxPhotosModal] = useState(false);
   const [maxPhotosModalMsg, setMaxPhotosModalMsg] = useState("");
+
+  // TAMBAHAN: Setup Ref & Handler untuk ReactQuill
+  const quillRef = useRef<any>(null);
+  
+  const imageHandler = () => {
+    const input = document.createElement("input");
+    input.setAttribute("type", "file");
+    input.setAttribute("accept", "image/*");
+    input.click();
+
+    input.onchange = async () => {
+      const file = input.files ? input.files[0] : null;
+      if (!file) return;
+
+      setLoading(true); 
+      const loadingToast = toast.loading("Mengunggah gambar ke dalam artikel...");
+
+      try {
+        const url = await uploadFile(file); 
+        
+        const quill = quillRef.current?.getEditor();
+        if (quill) {
+          const range = quill.getSelection(true);
+          quill.insertEmbed(range.index, "image", url);
+          quill.setSelection(range.index + 1);
+        }
+        toast.success("Gambar berhasil disisipkan", { id: loadingToast });
+      } catch (err) {
+        toast.error("Gagal mengunggah gambar", { id: loadingToast });
+      } finally {
+        setLoading(false);
+      }
+    };
+  };
+
+  const quillModules = useMemo(() => ({
+    toolbar: {
+      container: [
+        [{ header: [1, 2, 3, false] }],
+        ["bold", "italic", "underline"],
+        [{ list: "ordered" }, { list: "bullet" }],
+        [{ align: [] }],
+        ["link", "image"],
+        ["clean"],
+      ],
+      handlers: {
+        image: imageHandler,
+      },
+    },
+  }), []);
+
 
   const handleDragStart = (e: React.DragEvent, index: number) => {
     setDraggedIdx(index);
@@ -268,7 +334,6 @@ export default function EditKontenClient({ content }: { content: ContentItem }) 
         if (!payload.imageUrl && galleryImages.length > 0) {
           payload.imageUrl = galleryImages[0];
         }
-        // UPDATE: Selalu simpan sebagai JSON agar coverCaption ikut tersimpan (sama seperti Berita)
         payload.body = JSON.stringify({ 
           html: form.body, 
           images: galleryImages,
@@ -380,12 +445,9 @@ export default function EditKontenClient({ content }: { content: ContentItem }) 
               <label className="block text-xs font-bold text-[#6B6560] uppercase tracking-wider mb-2">Jenis Misa</label>
               <select name="massType" value={form.massType} onChange={handleChange}
                 className="w-full h-11 px-4 border border-[#DDD8D0] rounded-md text-sm bg-white focus:border-[#B8960C] focus:ring-1 focus:ring-[#B8960C] outline-none">
-                
-                {/* UPDATE DI SINI: Mengubah menjadi 3 opsi dengan value yang sesuai */}
                 <option value="Misa Harian">Misa Harian</option>
                 <option value="Misa Mingguan">Misa Mingguan</option>
                 <option value="Misa Khusus">Misa Khusus (Hari Raya / Acara Khusus)</option>
-                
               </select>
             </div>
           </div>
@@ -409,13 +471,22 @@ export default function EditKontenClient({ content }: { content: ContentItem }) 
         <div>
           <label className="block text-xs font-bold text-[#6B6560] uppercase tracking-wider mb-2">
             {isMassSchedule ? "Keterangan Tambahan" : "Isi Konten / Artikel"}
+            {!isMassSchedule && <span className="text-red-500"> *</span>}
           </label>
-          <textarea name="body" value={form.body} onChange={handleChange} rows={8}
-            className="w-full px-4 py-3 border border-[#DDD8D0] rounded-md text-sm focus:border-[#B8960C] focus:ring-1 focus:ring-[#B8960C] outline-none resize-y" />
+          <div className="bg-white rounded-md mb-12">
+            <ReactQuill 
+              forwardedRef={quillRef} 
+              modules={quillModules}
+              theme="snow" 
+              value={form.body}
+              onChange={(content: string) => setForm(prev => ({ ...prev, body: content }))}
+              className="h-[500px] pb-12 mb-12" // TAMBAHAN: Diperbesar menjadi 500px
+              placeholder={isMassSchedule ? "Keterangan opsional mengenai jadwal misa..." : "Tulis isi berita atau pengumuman di sini..."}
+            />
+          </div>
         </div>
       )}
 
-      {/* URL Gambar Cover (News/Announcement only, not Gallery) */}
       {/* URL Gambar Cover & Keterangan (News/Announcement only, not Gallery) */}
       {!isGallery && !isMassSchedule && (
         <div className="space-y-4 border-b border-[#EDE8DF] pb-6">
@@ -440,19 +511,19 @@ export default function EditKontenClient({ content }: { content: ContentItem }) 
               className="w-full h-11 px-4 border border-[#DDD8D0] rounded-md text-sm bg-white focus:border-[#B8960C] focus:ring-1 focus:ring-[#B8960C] outline-none italic text-[#6B6560]"
             />
           </div>
-          {/* TAMBAHAN BARU: Input Penulis / Dipublikasikan Oleh */}
-            <div className="pt-4 mt-2 border-t border-[#EDE8DF]">
-              <label className="block text-xs font-bold text-[#6B6560] uppercase tracking-wider mb-2">
-                Dipublikasikan Oleh <span className="text-[#A89880] font-normal">(Opsional)</span>
-              </label>
-              <input
-                type="text"
-                value={author}
-                onChange={(e) => setAuthor(e.target.value)}
-                placeholder="cth: Sekretariat Paroki"
-                className="w-full h-11 px-4 border border-[#DDD8D0] rounded-md text-sm bg-white focus:border-[#B8960C] focus:ring-1 focus:ring-[#B8960C] outline-none text-[#3D2B1F]"
-              />
-            </div>
+          {/* Input Penulis / Dipublikasikan Oleh */}
+          <div className="pt-4 mt-2 border-t border-[#EDE8DF]">
+            <label className="block text-xs font-bold text-[#6B6560] uppercase tracking-wider mb-2">
+              Dipublikasikan Oleh <span className="text-[#A89880] font-normal">(Opsional)</span>
+            </label>
+            <input
+              type="text"
+              value={author}
+              onChange={(e) => setAuthor(e.target.value)}
+              placeholder="cth: Sekretariat Paroki"
+              className="w-full h-11 px-4 border border-[#DDD8D0] rounded-md text-sm bg-white focus:border-[#B8960C] focus:ring-1 focus:ring-[#B8960C] outline-none text-[#3D2B1F]"
+            />
+          </div>
         </div>
       )}
 

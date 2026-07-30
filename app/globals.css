@@ -301,3 +301,11 @@
 .prose-sacred h3 { color: #2C1F14; }
 .prose-sacred a  { color: #B8960C; text-decoration: underline; }
 .prose-sacred strong { color: #2C1F14; font-weight: 600; }
+
+/* Responsif untuk gambar di dalam artikel Berita (React Quill) */
+.prose img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+  margin: 1.5rem auto; /* Memberikan jarak atas-bawah dan meratakannya di tengah */
+}
