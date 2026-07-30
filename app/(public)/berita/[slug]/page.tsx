@@ -95,6 +95,8 @@ export default async function BeritaDetailPage({ params }: { params: { slug: str
   const news = newsRecord[0];
   const { html, images, parsedCaption, parsedAuthor } = parseNewsBody(news.body);
 
+  const cleanHtml = html.replace(/&nbsp;/g, ' ');
+
   // PERBAIKAN UTAMA: Tarik data langsung dari kolom database (prioritas pertama)
   const finalAuthor = news.author || parsedAuthor || "Sekretariat Paroki";
   const finalCaption = news.imageCaption || parsedCaption || "";
@@ -198,8 +200,8 @@ export default async function BeritaDetailPage({ params }: { params: { slug: str
 
           {/* 3. ISI KONTEN */}
           <div
-              className="prose prose-stone max-w-none text-[#4A3728] prose-p:leading-relaxed prose-p:mb-5 prose-a:text-[#B8960C] prose-a:font-semibold prose-headings:font-bold prose-headings:text-[#3D2B1F] prose-strong:text-[#3D2B1F] prose-li:mb-1"
-              dangerouslySetInnerHTML={{ __html: html }}
+            className="prose prose-stone max-w-none text-[#4A3728] prose-p:leading-relaxed prose-p:mb-5 prose-a:text-[#B8960C] prose-a:font-semibold prose-headings:font-bold prose-headings:text-[#3D2B1F] prose-strong:text-[#3D2B1F] prose-li:mb-1"
+            dangerouslySetInnerHTML={{ __html: cleanHtml }}
           />
 
           {/* Dokumentasi Foto */}
