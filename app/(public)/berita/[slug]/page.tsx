@@ -198,7 +198,7 @@ export default async function BeritaDetailPage({ params }: { params: { slug: str
 
           {/* 3. ISI KONTEN */}
           <div
-              className="prose prose-stone max-w-none break-words text-[#4A3728] prose-p:leading-relaxed prose-p:mb-5 prose-a:text-[#B8960C] prose-a:font-semibold prose-headings:font-bold prose-headings:text-[#3D2B1F] prose-strong:text-[#3D2B1F] prose-li:mb-1"
+              className="prose prose-stone max-w-none text-[#4A3728] prose-p:leading-relaxed prose-p:mb-5 prose-a:text-[#B8960C] prose-a:font-semibold prose-headings:font-bold prose-headings:text-[#3D2B1F] prose-strong:text-[#3D2B1F] prose-li:mb-1"
               dangerouslySetInnerHTML={{ __html: html }}
           />
 
