@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { User, Heart, Camera, Info } from "lucide-react";
+import { User, Heart, Camera, Info, ArrowLeft } from "lucide-react";
 import ImageUpload from "@/components/admin/ImageUpload";
+import Link from "next/link";
 
 const AGAMA_OPTIONS = ["Katolik", "Kristen Protestan", "Islam", "Hindu", "Buddha", "Konghucu", "Lainnya"];
 
@@ -11,40 +12,57 @@ const inputClass =
   "w-full h-11 px-4 rounded-md border border-[#DDD8D0] focus:border-[#B8960C] focus:ring-1 focus:ring-[#B8960C] outline-none text-[#3D2B1F] bg-white";
 const labelClass = "block mb-2 text-xs font-bold text-[#6B6560] uppercase tracking-wider";
 
-export function ProfileForm() {
+// Fungsi untuk mengamankan format tanggal (menjadi YYYY-MM-DD) untuk input type="date"
+const formatDateForInput = (dateVal: any) => {
+  if (!dateVal) return "";
+  try {
+    const d = new Date(dateVal);
+    if (isNaN(d.getTime())) return "";
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  } catch (e) {
+    return "";
+  }
+};
+
+// TAMBAHAN: Menerima props initialData dan isEdit
+export function ProfileForm({ initialData, isEdit = false }: { initialData?: any, isEdit?: boolean }) {
   const router = useRouter();
 
-  // === Data Calon Suami ===
-  const [groomName, setGroomName] = useState("");
-  const [groomBirthdate, setGroomBirthdate] = useState("");
-  const [groomReligion, setGroomReligion] = useState("");
-  const [groomOccupation, setGroomOccupation] = useState("");
-  const [groomPhone, setGroomPhone] = useState("");
-  const [groomBaptismChurch, setGroomBaptismChurch] = useState("");
-  const [groomFatherName, setGroomFatherName] = useState("");
-  const [groomMotherName, setGroomMotherName] = useState("");
+  // === Data Calon Suami (Diisi dengan data lama jika mode edit) ===
+  const [groomName, setGroomName] = useState(initialData?.groomName || "");
+  const [groomBirthdate, setGroomBirthdate] = useState(formatDateForInput(initialData?.groomBirthdate));
+  const [groomReligion, setGroomReligion] = useState(initialData?.groomReligion || "");
+  const [groomOccupation, setGroomOccupation] = useState(initialData?.groomOccupation || "");
+  const [groomPhone, setGroomPhone] = useState(initialData?.groomPhone || "");
+  const [groomBaptismChurch, setGroomBaptismChurch] = useState(initialData?.groomBaptismChurch || "");
+  const [groomFatherName, setGroomFatherName] = useState(initialData?.groomFatherName || "");
+  const [groomMotherName, setGroomMotherName] = useState(initialData?.groomMotherName || "");
 
   // === Data Calon Isteri ===
-  const [brideName, setBrideName] = useState("");
-  const [brideBirthdate, setBrideBirthdate] = useState("");
-  const [brideReligion, setBrideReligion] = useState("");
-  const [brideOccupation, setBrideOccupation] = useState("");
-  const [bridePhone, setBridePhone] = useState("");
-  const [brideBaptismChurch, setBrideBaptismChurch] = useState("");
-  const [brideFatherName, setBrideFatherName] = useState("");
-  const [brideMotherName, setBrideMotherName] = useState("");
+  const [brideName, setBrideName] = useState(initialData?.brideName || "");
+  const [brideBirthdate, setBrideBirthdate] = useState(formatDateForInput(initialData?.brideBirthdate));
+  const [brideReligion, setBrideReligion] = useState(initialData?.brideReligion || "");
+  const [brideOccupation, setBrideOccupation] = useState(initialData?.brideOccupation || "");
+  const [bridePhone, setBridePhone] = useState(initialData?.bridePhone || "");
+  const [brideBaptismChurch, setBrideBaptismChurch] = useState(initialData?.brideBaptismChurch || "");
+  const [brideFatherName, setBrideFatherName] = useState(initialData?.brideFatherName || "");
+  const [brideMotherName, setBrideMotherName] = useState(initialData?.brideMotherName || "");
 
   // === Informasi Perkawinan ===
-  const [preferredWeddingDate, setPreferredWeddingDate] = useState("");
-  const [preferredWeddingTime, setPreferredWeddingTime] = useState("");
-  const [postMarriageAddress, setPostMarriageAddress] = useState("");
-  const [ceremonyType, setCeremonyType] = useState("");
+  const [preferredWeddingDate, setPreferredWeddingDate] = useState(formatDateForInput(initialData?.preferredWeddingDate));
+  const [preferredWeddingTime, setPreferredWeddingTime] = useState(initialData?.preferredWeddingTime || "");
+  const [postMarriageAddress, setPostMarriageAddress] = useState(initialData?.postMarriageAddress || "");
+  const [ceremonyType, setCeremonyType] = useState(initialData?.ceremonyType || "");
 
   // === Persetujuan ===
-  const [agreement, setAgreement] = useState(false);
+  const [agreement, setAgreement] = useState(isEdit); // Jika edit, anggap sudah setuju sebelumnya
 
   // === Foto Pasangan ===
-  const [couplePhoto, setCouplePhoto] = useState("");
+  const existingPhoto = initialData?.couplePhoto || initialData?.groomPhoto || initialData?.bridePhoto || "";
+  const [couplePhoto, setCouplePhoto] = useState(existingPhoto);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -56,9 +74,10 @@ export function ProfileForm() {
 
     try {
       const res = await fetch("/api/profil", {
-        method: "POST",
+        method: isEdit ? "PUT" : "POST", // Gunakan PUT jika update, POST jika baru
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          id: initialData?.id, // ID dibutuhkan server untuk meng-update data yang tepat
           groomName, groomBirthdate, groomReligion, groomOccupation,
           groomPhone, groomBaptismChurch, groomFatherName, groomMotherName,
           brideName, brideBirthdate, brideReligion, brideOccupation,
@@ -73,7 +92,8 @@ export function ProfileForm() {
         throw new Error(data.error || "Gagal menyimpan profil");
       }
 
-      router.push("/dasbor/beranda");
+      // Jika berhasil, arahkan kembali ke halaman profil jika sedang mengedit
+      router.push(isEdit ? "/dasbor/profil" : "/dasbor/beranda");
       router.refresh();
     } catch (err: unknown) {
       if (err instanceof Error) {
@@ -87,12 +107,22 @@ export function ProfileForm() {
 
   return (
     <div>
+      {/* Tombol Batal Khusus Mode Edit */}
+      {isEdit && (
+        <Link href="/dasbor/profil" className="inline-flex items-center gap-1.5 text-[12px] font-semibold mb-5 transition-colors hover:text-[#B8960C]" style={{ color: "#9C8B7A" }}>
+          <ArrowLeft size={14} /> Batal dan Kembali
+        </Link>
+      )}
+
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-[#3D2B1F]" style={{ fontFamily: "var(--font-cormorant)" }}>
-          Mulai Pendaftaran
+          {isEdit ? "Ubah Data Profil" : "Mulai Pendaftaran"}
         </h1>
         <p className="text-[#6B6560]">
-          Mohon isi data lengkap calon pengantin sesuai dokumen resmi (KTP/Akte/Surat Baptis).
+          {isEdit 
+            ? "Silakan perbaiki data Anda yang keliru. Pastikan disesuaikan kembali dengan dokumen resmi." 
+            : "Mohon isi data lengkap calon pengantin sesuai dokumen resmi (KTP/Akte/Surat Baptis)."
+          }
         </p>
       </div>
 
@@ -227,16 +257,6 @@ export function ProfileForm() {
                 <option value="Tanpa Misa">Tanpa Misa</option>
               </select>
             </div>
-
-            {/* Pastor Pemberkat — Info Only */}
-            <div className="md:col-span-2">
-              <label className={labelClass}>Pastor Pemberkat</label>
-              <div className="flex items-center gap-3 px-4 py-3 rounded-md bg-[#F5F0E8] border border-[#EDE8DF]">
-                <Info size={16} className="text-[#9C8B7A] flex-shrink-0" />
-                <p className="text-sm text-[#9C8B7A] italic">Belum ditentukan oleh Admin Sekretariat</p>
-              </div>
-              <p className="text-[11px] text-[#9C8B7A] mt-1">Pastor Pemberkat akan ditugaskan oleh Admin Sekretariat setelah data pendaftaran diverifikasi.</p>
-            </div>
           </div>
         </div>
 
@@ -282,7 +302,7 @@ export function ProfileForm() {
             disabled={loading}
             className="px-8 py-3 bg-[#B8960C] text-white font-bold rounded-md hover:bg-[#9A7A00] transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
           >
-            {loading ? "Menyimpan Data..." : "Simpan Profil & Lanjut ke Tahap 1"}
+            {loading ? "Menyimpan Data..." : (isEdit ? "Simpan Perubahan Data" : "Simpan Profil & Lanjut ke Tahap 1")}
           </button>
         </div>
       </form>
