@@ -35,12 +35,10 @@ export async function generateMetadata({ params }: { params: { slug: string } })
         coverImage = parsed.images[0];
       }
       if (parsed.html) {
-        // Membersihkan HTML, spasi kaku, dan baris baru agar rapi di WA
         plainTextDesc = parsed.html.replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim().substring(0, 150) + "...";
       }
     } catch (e) {
       plainTextDesc = news.body.replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim().substring(0, 150) + "...";
-      
       if (!coverImage) {
         const imgMatch = news.body.match(/<img[^>]+src="([^">]+)"/);
         if (imgMatch && imgMatch[1]) {
@@ -50,15 +48,23 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     }
   }
 
-  // ════════ PERBAIKAN: WAJIB ABSOLUTE URL ════════
+  // ════════ PERBAIKAN FINAL PENGAMANAN URL GAMBAR WHATSAPP ════════
   let ogImageUrl = coverImage || "https://www.katedralpontianak.com/bg-katedral.jpg";
   
-  // Jika URL gambar berawalan "/", WhatsApp akan menolaknya.
-  // Jadi kita harus tambahkan nama domain di depannya secara otomatis.
-  if (ogImageUrl.startsWith("/")) {
-    ogImageUrl = `https://www.katedralpontianak.com${ogImageUrl}`;
+  // 1. Jika gambar berupa kode Base64 (hasil copy-paste langsung ke editor)
+  // WhatsApp tidak bisa membaca Base64, kita paksakan pakai gambar default Katedral
+  if (ogImageUrl.startsWith("data:image")) {
+    ogImageUrl = "https://www.katedralpontianak.com/bg-katedral.jpg";
   }
-  // ═══════════════════════════════════════════════
+  // 2. Jika URL gambar relatif (misal: /uploads/foto.jpg)
+  else if (!ogImageUrl.startsWith("http")) {
+    const prefixSlash = ogImageUrl.startsWith("/") ? "" : "/";
+    ogImageUrl = `https://www.katedralpontianak.com${prefixSlash}${ogImageUrl}`;
+  }
+
+  // 3. WhatsApp GAGAL jika ada SPASI di nama file gambar. Kita ubah spasi jadi kode aman (%20)
+  ogImageUrl = ogImageUrl.replace(/ /g, '%20');
+  // ═════════════════════════════════════════════════════════════════
 
   return {
     title: `${news.title} | Katedral Santo Yosef Pontianak`,
@@ -70,7 +76,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       siteName: "Katedral Santo Yosef Pontianak",
       images: [
         {
-          url: ogImageUrl, // Sekarang WhatsApp pasti bisa membaca ini
+          url: ogImageUrl,
           width: 1200,
           height: 630,
           alt: news.title || "Gambar Berita",
