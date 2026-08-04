@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { db } from "@/lib/db";
+import { eq } from "drizzle-orm"; // <-- Tambahan penting untuk fungsi update
 import {
   coupleProfiles,
   marriageApplications,
@@ -37,34 +38,14 @@ export async function POST(req: Request) {
 
     const body = await req.json();
     const {
-      // Calon Suami
-      groomName,
-      groomBirthdate,
-      groomReligion,
-      groomOccupation,
-      groomPhone,
-      groomBaptismChurch,
-      groomFatherName,
-      groomMotherName,
-      // Calon Isteri
-      brideName,
-      brideBirthdate,
-      brideReligion,
-      brideOccupation,
-      bridePhone,
-      brideBaptismChurch,
-      brideFatherName,
-      brideMotherName,
-      // Informasi Perkawinan
-      preferredWeddingDate,
-      preferredWeddingTime,
-      postMarriageAddress,
-      ceremonyType,
-      // Foto
+      groomName, groomBirthdate, groomReligion, groomOccupation,
+      groomPhone, groomBaptismChurch, groomFatherName, groomMotherName,
+      brideName, brideBirthdate, brideReligion, brideOccupation,
+      bridePhone, brideBaptismChurch, brideFatherName, brideMotherName,
+      preferredWeddingDate, preferredWeddingTime, postMarriageAddress, ceremonyType,
       couplePhoto,
     } = body;
 
-    // Validate required fields
     if (!groomName || !brideName || !groomReligion || !brideReligion) {
       return NextResponse.json(
         { error: "Data tidak lengkap. Nama dan agama mempelai wajib diisi." },
@@ -72,47 +53,27 @@ export async function POST(req: Request) {
       );
     }
 
-    // Generate random reg number (e.g., KP-2026-4F8A)
     const year = new Date().getFullYear();
     const randomHex = Math.floor(Math.random() * 65535).toString(16).toUpperCase().padStart(4, '0');
     const registrationNumber = `KP-${year}-${randomHex}`;
 
-    // Execute in transaction
     await db.transaction(async (tx) => {
-      // 1. Insert Profile
       const profileId = nanoid();
       await tx.insert(coupleProfiles).values({
         id: profileId,
         userId: session.user.id,
         registrationNumber,
-        // Calon Suami
-        groomName,
-        groomBirthdate,
-        groomReligion,
-        groomOccupation,
-        groomPhone,
-        groomBaptismChurch,
-        groomFatherName,
-        groomMotherName,
-        // Calon Isteri
-        brideName,
-        brideBirthdate,
-        brideReligion,
-        brideOccupation,
-        bridePhone,
-        brideBaptismChurch,
-        brideFatherName,
-        brideMotherName,
-        // Informasi Perkawinan
+        groomName, groomBirthdate, groomReligion, groomOccupation,
+        groomPhone, groomBaptismChurch, groomFatherName, groomMotherName,
+        brideName, brideBirthdate, brideReligion, brideOccupation,
+        bridePhone, brideBaptismChurch, brideFatherName, brideMotherName,
         preferredWeddingDate: preferredWeddingDate || null,
         preferredWeddingTime: preferredWeddingTime || null,
         postMarriageAddress: postMarriageAddress || null,
         ceremonyType: ceremonyType || null,
-        // Foto
         couplePhoto: couplePhoto || null,
       });
 
-      // 2. Create Application
       const applicationId = nanoid();
       await tx.insert(marriageApplications).values({
         id: applicationId,
@@ -121,16 +82,14 @@ export async function POST(req: Request) {
         weddingDate: null,
       });
 
-      // 3. Create initial stage history
       await tx.insert(stageHistory).values({
         id: nanoid(),
         applicationId,
         stageNumber: 1,
         note: "Pendaftaran baru diterima melalui sistem.",
-        changedBy: session.user.id, // Set by the user themselves for the initial state
+        changedBy: session.user.id,
       });
 
-      // 4. Create required documents checklist
       const docsToInsert = DEFAULT_DOCUMENTS.map((docName) => ({
         id: nanoid(),
         applicationId,
@@ -139,7 +98,6 @@ export async function POST(req: Request) {
       }));
       await tx.insert(requiredDocuments).values(docsToInsert);
 
-      // 5. Send notification
       await tx.insert(notifications).values({
         id: nanoid(),
         userId: session.user.id,
@@ -150,9 +108,64 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ success: true, registrationNumber }, { status: 201 });
   } catch (error) {
-    console.error("API Profil Error:", error);
+    console.error("API Profil POST Error:", error);
     return NextResponse.json(
       { error: "Terjadi kesalahan internal server" },
+      { status: 500 }
+    );
+  }
+}
+
+// ═══════════════════ FUNGSI BARU UNTUK UPDATE DATA (EDIT) ═══════════════════
+export async function PUT(req: Request) {
+  try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session || session.user.role !== "COUPLE") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const body = await req.json();
+    const {
+      id, // ID profil yang akan diupdate
+      groomName, groomBirthdate, groomReligion, groomOccupation,
+      groomPhone, groomBaptismChurch, groomFatherName, groomMotherName,
+      brideName, brideBirthdate, brideReligion, brideOccupation,
+      bridePhone, brideBaptismChurch, brideFatherName, brideMotherName,
+      preferredWeddingDate, preferredWeddingTime, postMarriageAddress, ceremonyType,
+      couplePhoto,
+    } = body;
+
+    // Verifikasi bahwa profil tersebut benar-benar milik user yang sedang login
+    const existingProfile = await db.select().from(coupleProfiles)
+      .where(eq(coupleProfiles.userId, session.user.id)).limit(1);
+
+    if (existingProfile.length === 0 || existingProfile[0].id !== id) {
+      return NextResponse.json({ error: "Profil tidak ditemukan atau akses ditolak." }, { status: 404 });
+    }
+
+    // Lakukan proses pembaruan (Update) ke database
+    await db.update(coupleProfiles)
+      .set({
+        groomName, groomBirthdate, groomReligion, groomOccupation,
+        groomPhone, groomBaptismChurch, groomFatherName, groomMotherName,
+        brideName, brideBirthdate, brideReligion, brideOccupation,
+        bridePhone, brideBaptismChurch, brideFatherName, brideMotherName,
+        preferredWeddingDate: preferredWeddingDate || null,
+        preferredWeddingTime: preferredWeddingTime || null,
+        postMarriageAddress: postMarriageAddress || null,
+        ceremonyType: ceremonyType || null,
+        couplePhoto: couplePhoto || null,
+      })
+      .where(eq(coupleProfiles.id, id));
+
+    return NextResponse.json({ success: true }, { status: 200 });
+  } catch (error) {
+    console.error("API Profil PUT Error:", error);
+    return NextResponse.json(
+      { error: "Terjadi kesalahan saat menyimpan perubahan profil." },
       { status: 500 }
     );
   }
