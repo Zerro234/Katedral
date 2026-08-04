@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 import { coupleProfiles, marriageApplications, users } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { ProfileForm } from "./profile-form";
-import { User, Calendar, Phone, Church, Info, ArrowLeft, Briefcase, BookOpen, Home, Heart } from "lucide-react";
+import { User, Calendar, Phone, Church, Info, ArrowLeft, Briefcase, BookOpen, Home, Heart, Lock } from "lucide-react";
 import Link from "next/link";
 
 const formatDate = (d: string | null) => {
@@ -50,6 +50,10 @@ export default async function ProfilPage() {
     .where(eq(marriageApplications.coupleProfileId, profile.id)).limit(1);
   const application = appRecord[0];
   let priestName: string | null = null;
+  
+  // Mengambil status tahap saat ini (Default ke 1 jika belum ada)
+  const currentStage = application?.currentStage || 1;
+
   if (application?.priestId) {
     const priestRecord = await db.select({ name: users.name }).from(users)
       .where(eq(users.id, application.priestId)).limit(1);
@@ -178,6 +182,32 @@ export default async function ProfilPage() {
           </p>
         </div>
       </div>
+
+      {/* Tombol Ubah Data (Hanya Muncul di Tahap 1) */}
+      {currentStage === 1 && (
+        <div className="mt-8 flex flex-col items-center justify-center p-6 bg-[#FAF7F2] border border-[#EDE8DF] rounded-xl">
+          <Link 
+            href="/dasbor/profil/edit"
+            className="bg-[#B8960C] text-white font-bold text-sm px-8 py-3 rounded-md hover:bg-[#9A7A00] transition-colors shadow-sm"
+          >
+            Ubah Data Profil
+          </Link>
+          <p className="mt-4 text-xs text-[#9C8B7A] italic text-center max-w-lg leading-relaxed">
+            * <strong className="font-semibold text-[#6B6560]">Catatan:</strong> Tombol ubah data ini hanya tersedia selama pendaftaran Anda berada di <strong className="font-semibold text-[#6B6560]">Tahap 1</strong>. Setelah data diverifikasi oleh Sekretariat Paroki, data Anda akan dikunci secara permanen untuk keperluan pencetakan dokumen.
+          </p>
+        </div>
+      )}
+
+      {/* Pesan Terkunci (Tahap 2 ke atas) */}
+      {currentStage > 1 && (
+        <div className="mt-8 p-4 bg-gray-50 border border-gray-200 rounded-lg text-center flex flex-col items-center justify-center gap-2">
+          <Lock size={20} className="text-gray-400" />
+          <p className="text-xs text-gray-500 font-medium">
+            Data profil telah dikunci karena sudah diverifikasi oleh Admin. Jika ada kesalahan mendesak, silakan hubungi Sekretariat Paroki.
+          </p>
+        </div>
+      )}
+
     </div>
   );
 }
