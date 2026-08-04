@@ -11,54 +11,75 @@ import { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
 
-export async function generateMetadata({ params }: { params: { slug: string } }) {
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const { slug } = await params;
   
-  // 1. Ambil data dari database
-  const record = await db.select().from(contents).where(eq(contents.slug, slug)).limit(1);
-  const news = record[0];
+  const newsRecord = await db.select()
+    .from(contents)
+    .where(eq(contents.slug, slug))
+    .limit(1);
 
-  if (!news) return { title: "Berita Tidak Ditemukan" };
+  if (newsRecord.length === 0) {
+    return { title: "Berita Tidak Ditemukan" };
+  }
 
-  // 2. Ekstrak gambar (dari imageUrl atau dari dalam JSON body)
+  const news = newsRecord[0];
+  
+  // 1. Siapkan wadah untuk gambar dan teks
   let coverImage = news.imageUrl;
   let plainTextDesc = news.title || "";
 
   if (news.body) {
     try {
-      // Coba parse jika bentuknya JSON (format baru)
+      // Coba baca jika formatnya JSON (seperti Pengumuman/Galeri)
       const parsed = JSON.parse(news.body);
       if (!coverImage && parsed.images && parsed.images.length > 0) {
         coverImage = parsed.images[0];
       }
-      // Bersihkan tag HTML untuk deskripsi WhatsApp
       if (parsed.html) {
         plainTextDesc = parsed.html.replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').substring(0, 150) + "...";
       }
     } catch (e) {
-      // Jika bukan JSON (format lama), bersihkan tag HTML langsung
+      // Jika format HTML Murni (Berita Baru dari Editor)
       plainTextDesc = news.body.replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').substring(0, 150) + "...";
+      
+      // TRIK CERDAS: Ekstrak URL gambar pertama dari dalam tag HTML <img> jika cover kosong
+      if (!coverImage) {
+        const imgMatch = news.body.match(/<img[^>]+src="([^">]+)"/);
+        if (imgMatch && imgMatch[1]) {
+          coverImage = imgMatch[1];
+        }
+      }
     }
   }
 
-  // 3. Fallback gambar jika berita tidak memiliki gambar sama sekali
-  const ogImage = coverImage || "https://www.katedralpontianak.com/bg-katedral.jpg";
+  // 2. Tentukan gambar final (fallback ke gambar katedral jika tidak ada foto sama sekali)
+  const ogImageUrl = coverImage || "https://www.katedralpontianak.com/bg-katedral.jpg";
 
-  // 4. Kembalikan Meta Tags untuk WhatsApp, Facebook, dll
+  // 3. Rakit Meta Tags
   return {
-    title: `${news.title} | Katedral Pontianak`,
+    title: `${news.title} | Katedral Santo Yosef Pontianak`,
     description: plainTextDesc,
     openGraph: {
       title: news.title,
       description: plainTextDesc,
-      images: [{ url: ogImage }],
+      url: `https://www.katedralpontianak.com/berita/${slug}`,
+      siteName: "Katedral Santo Yosef Pontianak",
+      images: [
+        {
+          url: ogImageUrl,
+          width: 1200,
+          height: 630,
+          alt: news.title || "Gambar Berita",
+        }
+      ],
       type: "article",
     },
     twitter: {
       card: "summary_large_image",
       title: news.title,
       description: plainTextDesc,
-      images: [ogImage],
+      images: [ogImageUrl],
     }
   };
 }
