@@ -153,7 +153,7 @@ export default async function BeritaDetailPage({ params }: { params: { slug: str
       </div>
 
       {/* Content Area */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 -mt-32 relative z-20 pb-20">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 -mt-32 relative z-20 pb-20">
         
         {/* Article Card */}
         <div className="bg-white rounded-xl shadow-md border border-[#DDD8D0] p-6 md:p-12">
