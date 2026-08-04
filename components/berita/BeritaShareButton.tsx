@@ -27,7 +27,17 @@ export function BeritaShareButton({ title, url }: { title: string; url?: string 
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    setShareUrl(url || window.location.href);
+    // ════════ PERBAIKAN TRIK ANTI-CACHE ════════
+    // Mengambil URL dasar
+    const baseUrl = url || window.location.href;
+    // Membuat angka acak dari waktu saat ini
+    const timestamp = new Date().getTime();
+    // Memastikan format URL benar (menggunakan ? jika belum ada parameter, atau & jika sudah ada)
+    const separator = baseUrl.includes("?") ? "&" : "?";
+    
+    // Hasilnya akan menjadi: https://katedralpontianak.com/berita/judul?v=173456789
+    setShareUrl(`${baseUrl}${separator}v=${timestamp}`);
+    // ═══════════════════════════════════════════
   }, [url]);
 
   const handleShareClick = async () => {
