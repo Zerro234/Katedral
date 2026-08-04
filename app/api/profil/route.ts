@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { db } from "@/lib/db";
-import { eq } from "drizzle-orm"; // <-- Tambahan penting untuk fungsi update
+import { eq, like } from "drizzle-orm"; // <-- 'like' digunakan untuk mencari nomor berurutan
 import {
   coupleProfiles,
   marriageApplications,
@@ -53,9 +53,36 @@ export async function POST(req: Request) {
       );
     }
 
-    const year = new Date().getFullYear();
-    const randomHex = Math.floor(Math.random() * 65535).toString(16).toUpperCase().padStart(4, '0');
-    const registrationNumber = `KP-${year}-${randomHex}`;
+    // ═══════════════════ LOGIKA BARU: NOMOR REGISTRASI BERURUTAN ═══════════════════
+    
+    // 1. Dapatkan tanggal hari ini secara aman di zona waktu WIB (Asia/Jakarta)
+    const formatter = new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'Asia/Jakarta',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    });
+    const parts = formatter.formatToParts(new Date());
+    const y = parts.find(p => p.type === 'year')?.value;
+    const m = parts.find(p => p.type === 'month')?.value;
+    const d = parts.find(p => p.type === 'day')?.value;
+    const dateStr = `${y}${m}${d}`; // Hasil: 20260804
+
+    const prefix = `KP-${dateStr}-`;
+
+    // 2. Hitung berapa pendaftar yang sudah ada di database pada tanggal yang sama
+    const todayRegistrations = await db.select({ id: coupleProfiles.id })
+      .from(coupleProfiles)
+      .where(like(coupleProfiles.registrationNumber, `${prefix}%`));
+
+    // 3. Buat nomor urut baru (+1 dari total pendaftar hari ini)
+    const sequence = todayRegistrations.length + 1;
+    const sequenceStr = String(sequence).padStart(3, '0'); // Format urutan jadi 001, 002, dst
+
+    // 4. Gabungkan menjadi format final: KP-20260804-001
+    const registrationNumber = `${prefix}${sequenceStr}`;
+
+    // ═══════════════════════════════════════════════════════════════════════════════
 
     await db.transaction(async (tx) => {
       const profileId = nanoid();
@@ -116,7 +143,7 @@ export async function POST(req: Request) {
   }
 }
 
-// ═══════════════════ FUNGSI BARU UNTUK UPDATE DATA (EDIT) ═══════════════════
+// ═══════════════════ FUNGSI UPDATE DATA (EDIT) ═══════════════════
 export async function PUT(req: Request) {
   try {
     const session = await auth.api.getSession({
@@ -129,7 +156,7 @@ export async function PUT(req: Request) {
 
     const body = await req.json();
     const {
-      id, // ID profil yang akan diupdate
+      id,
       groomName, groomBirthdate, groomReligion, groomOccupation,
       groomPhone, groomBaptismChurch, groomFatherName, groomMotherName,
       brideName, brideBirthdate, brideReligion, brideOccupation,
@@ -138,7 +165,6 @@ export async function PUT(req: Request) {
       couplePhoto,
     } = body;
 
-    // Verifikasi bahwa profil tersebut benar-benar milik user yang sedang login
     const existingProfile = await db.select().from(coupleProfiles)
       .where(eq(coupleProfiles.userId, session.user.id)).limit(1);
 
@@ -146,7 +172,6 @@ export async function PUT(req: Request) {
       return NextResponse.json({ error: "Profil tidak ditemukan atau akses ditolak." }, { status: 404 });
     }
 
-    // Lakukan proses pembaruan (Update) ke database
     await db.update(coupleProfiles)
       .set({
         groomName, groomBirthdate, groomReligion, groomOccupation,
