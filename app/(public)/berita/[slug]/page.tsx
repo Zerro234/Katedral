@@ -25,25 +25,22 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 
   const news = newsRecord[0];
   
-  // 1. Siapkan wadah untuk gambar dan teks
   let coverImage = news.imageUrl;
   let plainTextDesc = news.title || "";
 
   if (news.body) {
     try {
-      // Coba baca jika formatnya JSON (seperti Pengumuman/Galeri)
       const parsed = JSON.parse(news.body);
       if (!coverImage && parsed.images && parsed.images.length > 0) {
         coverImage = parsed.images[0];
       }
       if (parsed.html) {
-        plainTextDesc = parsed.html.replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').substring(0, 150) + "...";
+        // Membersihkan HTML, spasi kaku, dan baris baru agar rapi di WA
+        plainTextDesc = parsed.html.replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim().substring(0, 150) + "...";
       }
     } catch (e) {
-      // Jika format HTML Murni (Berita Baru dari Editor)
-      plainTextDesc = news.body.replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').substring(0, 150) + "...";
+      plainTextDesc = news.body.replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim().substring(0, 150) + "...";
       
-      // TRIK CERDAS: Ekstrak URL gambar pertama dari dalam tag HTML <img> jika cover kosong
       if (!coverImage) {
         const imgMatch = news.body.match(/<img[^>]+src="([^">]+)"/);
         if (imgMatch && imgMatch[1]) {
@@ -53,10 +50,16 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     }
   }
 
-  // 2. Tentukan gambar final (fallback ke gambar katedral jika tidak ada foto sama sekali)
-  const ogImageUrl = coverImage || "https://www.katedralpontianak.com/bg-katedral.jpg";
+  // ════════ PERBAIKAN: WAJIB ABSOLUTE URL ════════
+  let ogImageUrl = coverImage || "https://www.katedralpontianak.com/bg-katedral.jpg";
+  
+  // Jika URL gambar berawalan "/", WhatsApp akan menolaknya.
+  // Jadi kita harus tambahkan nama domain di depannya secara otomatis.
+  if (ogImageUrl.startsWith("/")) {
+    ogImageUrl = `https://www.katedralpontianak.com${ogImageUrl}`;
+  }
+  // ═══════════════════════════════════════════════
 
-  // 3. Rakit Meta Tags
   return {
     title: `${news.title} | Katedral Santo Yosef Pontianak`,
     description: plainTextDesc,
@@ -67,7 +70,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       siteName: "Katedral Santo Yosef Pontianak",
       images: [
         {
-          url: ogImageUrl,
+          url: ogImageUrl, // Sekarang WhatsApp pasti bisa membaca ini
           width: 1200,
           height: 630,
           alt: news.title || "Gambar Berita",
