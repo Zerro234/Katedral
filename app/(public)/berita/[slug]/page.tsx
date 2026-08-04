@@ -11,49 +11,54 @@ import { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: { slug: string } }) {
   const { slug } = await params;
   
-  const newsRecord = await db.select()
-    .from(contents)
-    .where(eq(contents.slug, slug))
-    .limit(1);
+  // 1. Ambil data dari database
+  const record = await db.select().from(contents).where(eq(contents.slug, slug)).limit(1);
+  const news = record[0];
 
-  if (newsRecord.length === 0) {
-    return { title: "Berita Tidak Ditemukan" };
+  if (!news) return { title: "Berita Tidak Ditemukan" };
+
+  // 2. Ekstrak gambar (dari imageUrl atau dari dalam JSON body)
+  let coverImage = news.imageUrl;
+  let plainTextDesc = news.title || "";
+
+  if (news.body) {
+    try {
+      // Coba parse jika bentuknya JSON (format baru)
+      const parsed = JSON.parse(news.body);
+      if (!coverImage && parsed.images && parsed.images.length > 0) {
+        coverImage = parsed.images[0];
+      }
+      // Bersihkan tag HTML untuk deskripsi WhatsApp
+      if (parsed.html) {
+        plainTextDesc = parsed.html.replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').substring(0, 150) + "...";
+      }
+    } catch (e) {
+      // Jika bukan JSON (format lama), bersihkan tag HTML langsung
+      plainTextDesc = news.body.replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').substring(0, 150) + "...";
+    }
   }
 
-  const news = newsRecord[0];
-  
-  // Membersihkan tag HTML untuk deskripsi singkat di WhatsApp
-  const rawDesc = news.body ? news.body.replace(/<[^>]+>/g, ' ') : "";
-  const plainTextDesc = rawDesc.substring(0, 150) + "...";
-  
-  const ogImageUrl = news.imageUrl || "https://katedralpontianak.com/bg-katedral.jpg"; // Gambar default jika berita tidak punya foto
+  // 3. Fallback gambar jika berita tidak memiliki gambar sama sekali
+  const ogImage = coverImage || "https://www.katedralpontianak.com/bg-katedral.jpg";
 
+  // 4. Kembalikan Meta Tags untuk WhatsApp, Facebook, dll
   return {
-    title: `${news.title} | Katedral Santo Yosef Pontianak`,
+    title: `${news.title} | Katedral Pontianak`,
     description: plainTextDesc,
     openGraph: {
       title: news.title,
       description: plainTextDesc,
-      url: `https://katedralpontianak.com/berita/${slug}`,
-      siteName: "Katedral Santo Yosef Pontianak",
-      images: [
-        {
-          url: ogImageUrl,
-          width: 1200,
-          height: 630,
-          alt: news.title || "Gambar Berita",
-        }
-      ],
+      images: [{ url: ogImage }],
       type: "article",
     },
     twitter: {
       card: "summary_large_image",
       title: news.title,
       description: plainTextDesc,
-      images: [ogImageUrl],
+      images: [ogImage],
     }
   };
 }
