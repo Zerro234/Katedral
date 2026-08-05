@@ -23,15 +23,12 @@ export function SidebarAdmin() {
   const userInitial = userName.charAt(0).toUpperCase();
 
   const handleLogout = async () => {
-    await authClient.signOut({
-      fetchOptions: {
-        onSuccess: () => {
-          // Tunggu sampai sistem benar-benar mengonfirmasi sesi terhapus
-          router.push("/masuk");
-          router.refresh(); // Memaksa browser membersihkan memori halaman admin
-        },
-      },
-    });
+    try {
+      await authClient.signOut();
+      window.location.href = "/masuk";
+    } catch (error) {
+      console.error("Gagal keluar:", error);
+    }
   };
 
   const navItems = [

@@ -20,14 +20,12 @@ export function SidebarUser() {
   const [notifCount, setNotifCount] = useState(0);
 
   const handleLogout = async () => {
-    await authClient.signOut({
-      fetchOptions: {
-        onSuccess: () => {
-          router.push("/masuk");
-          router.refresh(); // Memaksa browser membersihkan memori dashboard
-        },
-      },
-    });
+    try {
+      await authClient.signOut();
+      window.location.href = "/masuk";
+    } catch (error) {
+      console.error("Gagal keluar:", error);
+    }
   };
 
   useEffect(() => {
