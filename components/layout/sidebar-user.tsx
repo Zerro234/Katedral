@@ -20,15 +20,24 @@ export function SidebarUser() {
   const [notifCount, setNotifCount] = useState(0);
 
   const handleLogout = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
+    e.preventDefault(); // Cegah refresh bawaan
+    
     try {
+      await fetch("/api/auth/sign-out", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        }
+      });
       await authClient.signOut();
 
-      setTimeout(() => {
-        window.location.replace("/masuk"); 
-      }, 500);
+      localStorage.clear();
+      sessionStorage.clear();
+
     } catch (error) {
       console.error("Gagal keluar:", error);
+    } finally {
+      window.location.replace("/masuk");
     }
   };
 
