@@ -19,10 +19,14 @@ export function SidebarUser() {
   const router = useRouter();
   const [notifCount, setNotifCount] = useState(0);
 
-  const handleLogout = async () => {
+  const handleLogout = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
     try {
       await authClient.signOut();
-      window.location.href = "/masuk";
+
+      setTimeout(() => {
+        window.location.replace("/masuk"); 
+      }, 500);
     } catch (error) {
       console.error("Gagal keluar:", error);
     }
@@ -129,9 +133,10 @@ export function SidebarUser() {
         <div style={{ height: "1px", background: "#E8E0D0" }} />
         <div className="p-3">
           <button
+            type="button"
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 rounded-lg px-4 py-2.5 text-[13px] text-left transition-all hover:bg-[#FAEDED]"
-            style={{ color: "#8B3A3A", fontFamily: "var(--font-dm-sans)" }}
+            className="flex items-center gap-3 rounded-lg px-4 py-2.5 text-[13px] transition-all hover:bg-red-500/10 text-left w-full"
+            style={{ color: "#E87070", fontFamily: "var(--font-dm-sans)" }}
           >
             <LogOut size={17} />
             Keluar

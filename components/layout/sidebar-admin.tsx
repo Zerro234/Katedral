@@ -22,10 +22,14 @@ export function SidebarAdmin() {
   const userName = session.data?.user?.name || "Administrator Katedral";
   const userInitial = userName.charAt(0).toUpperCase();
 
-  const handleLogout = async () => {
+  const handleLogout = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
     try {
       await authClient.signOut();
-      window.location.href = "/masuk";
+
+      setTimeout(() => {
+        window.location.replace("/masuk"); 
+      }, 500);
     } catch (error) {
       console.error("Gagal keluar:", error);
     }
@@ -136,6 +140,7 @@ export function SidebarAdmin() {
             Pengaturan
           </Link>
           <button
+            type="button"
             onClick={handleLogout}
             className="flex items-center gap-3 rounded-lg px-4 py-2.5 text-[13px] transition-all hover:bg-red-500/10 text-left w-full"
             style={{ color: "#E87070", fontFamily: "var(--font-dm-sans)" }}
